@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ skill.job_title }} | Skill Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar Placeholder -->
+    {% include 'mriif/navbar.html' %}
+
+    <!-- Hero Section with Background Image -->
+    <div class="relative h-[500px] w-full bg-cover bg-center" style="background-image: url('{{ skill.job_img.url }}')">
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div class="relative container mx-auto px-4 h-full flex flex-col justify-center text-center text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-fade-in">
+                {{ skill.job_title }}
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-200 animate-fade-in-delay">
+                {{ skill.job_category }}
+            </p>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-12 lg:py-16 -mt-16">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Quick Action Card -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <p class="text-sm text-gray-500">Job ID</p>
+                                <p class="font-semibold">{{ skill.job_id }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Category</p>
+                                <p class="font-semibold">{{ skill.job_category }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Card -->
+                <div class="bg-blue-600 text-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4">Ready to Dive In?</h3>
+                    <p class="text-blue-100 mb-6">Start your journey in {{ skill.job_title }} today!</p>
+                    <button class="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition duration-300">
+                        Explore Opportunities
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Information -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Job Description -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-file-alt text-blue-600 mr-3"></i>
+                        Job Description
+                    </h2>
+                    <p class="text-gray-600 leading-relaxed text-justify">{{ skill.job_description|safe|linebreaksbr }}</p>
+                </div>
+
+                <!-- Skills Involved -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-tools text-blue-600 mr-3"></i>
+                        Skills Involved
+                    </h2>
+                    <div class="flex items-center">
+                        <span class="text-gray-600 text-justify">{{ skill.skills_involved|safe|linebreaksbr }}</span>
+                    </div>
+                </div>
+
+                <!-- Career Opportunities -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-briefcase text-blue-600 mr-3"></i>
+                        Career Opportunities
+                    </h2>
+                    <div class="flex items-center">
+                        <span class="text-gray-600 text-justify">{{ skill.career_opportunities|safe|linebreaksbr }}</span>
+                    </div>
+                </div>
+
+                <!-- Role Summary -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                        Role Summary
+                    </h2>
+                    <p class="text-gray-600 leading-relaxed text-justify">{{ skill.role_summary }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    {% include 'mriif/footer.html' %}
+
+    <!-- Optional Animations -->
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        .animate-fade-in-delay {
+            animation: fadeIn 1s ease-out 0.5s forwards;
+            opacity: 0;
+        }
+    </style>
+</body>
+</html>

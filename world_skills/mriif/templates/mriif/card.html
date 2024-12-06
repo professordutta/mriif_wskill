@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 py-8">
+
+    <!-- Container for the skill cards -->
+    <div class="container mx-auto px-4">
+    <!-- Heading with top margin, larger font, and attractive style -->
+    <h1 class="text-5xl font-extrabold text-center text-gray-800 mb-12 mt-12">Available Job Skills</h1>
+        
+        <!-- Grid container for the cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for skill in x %}
+            <!-- Card for each skill -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <img src="{{ skill.job_img.url }}" alt="Job Image" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">{{ skill.job_title }}</h2>
+                    <p class="text-gray-600 text-sm mt-2">{{ skill.job_id }}</p>
+                    <p class="text-gray-500 text-sm mt-2">{{ skill.job_description|truncatewords:20 }}</p>
+                    <div class="mt-4">
+                        <a href="{% url "skill_detail" skill.id %}" class="px-6 py-3 bg-yellow-400 text-black font-semibold rounded-md shadow-lg hover:bg-yellow-500 transition">
+                            Learn More
+                        </a>
+                    </div> 
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

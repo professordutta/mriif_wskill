@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Manav Rachna Educational Institution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    {% include 'mriif/navbar.html' %}
+
+    <!-- Hero Section -->
+    <section class="relative bg-cover bg-center bg-no-repeat text-white py-20" style="background-image: url('{% static 'images/contact_bg.jpeg' %}');">
+        <div class="container mx-auto px-4 z-10 relative">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Connect with <span class="text-white">Manav Rachna</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 font-light">
+                    We're here to support your educational journey and answer all your questions.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="#contact-form" class="px-8 py-3 bg-yellow-400 text-black font-semibold rounded-full hover:bg-gray-100 transition">
+                        Get In Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute inset-0 bg-black opacity-50 z-0"></div>
+    </section>
+    
+    <!-- Contact Content -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="grid md:grid-cols-2 gap-12">
+            <!-- Contact Information -->
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-8">Contact Information</h2>
+                
+                <div class="space-y-6">
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-map-marker-alt text-yellow-500 text-2xl mr-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-800">Address</h3>
+                        </div>
+                        <p class="text-gray-600">
+                            Manav Rachna Educational Institution, 
+                            Sector 43, Aravalli Hills, 
+                            Delhi-NCR, Faridabad, Haryana - 121004
+                        </p>
+                    </div>
+
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-envelope text-yellow-500 text-2xl mr-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-800">Email</h3>
+                        </div>
+                        <p class="text-gray-600">
+                            <a href="mailto:admissions@manavrachna.edu.in" class="hover:text-yellow-600">
+                                admissions@manavrachna.edu.in
+                            </a>
+                        </p>
+                        <p class="text-gray-600">
+                            <a href="mailto:support@manavrachna.edu.in" class="hover:text-yellow-600">
+                                support@manavrachna.edu.in
+                            </a>
+                        </p>
+                    </div>
+
+                    <div class="bg-white shadow-md rounded-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-phone text-yellow-500 text-2xl mr-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-800">Phone</h3>
+                        </div>
+                        <p class="text-gray-600">+91 129 428 3800</p>
+                        <p class="text-gray-600">Toll Free: 1800 1212 369</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div id="contact-form">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8">Send Us a Message</h2>
+                <form class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                            <input type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                            <input type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Inquiry Type *</label>
+                        <select required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            <option value="">Select Inquiry Type</option>
+                            <option>Admissions</option>
+                            <option>Academic Programs</option>
+                            <option>Campus Facilities</option>
+                            <option>Other Inquiries</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Your Message *</label>
+                        <textarea rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"></textarea>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full px-6 py-3 bg-yellow-400 text-black font-semibold rounded-md shadow-lg hover:bg-yellow-500 transition">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="mt-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Our Location</h2>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3507.2794355684!2d77.3026506151038!3d28.431440682515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cdc7d8840abf7%3A0xb2c8f258e1fd4294!2sManav%20Rachna%20International%20Institute%20of%20Research%20and%20Studies!5e0!3m2!1sen!2sin!4v1638870697388!5m2!1sen!2sin" 
+                    width="100%" 
+                    height="450" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Message Section -->
+    <section class="bg-yellow-50 py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-3xl font-bold text-gray-800 mb-6">
+                Your Educational Journey Starts Here
+            </h3>
+            <p class="text-xl text-gray-700 max-w-3xl mx-auto mb-8">
+                <strong>At Manav Rachna, we believe in nurturing potential, fostering innovation, and creating leaders of tomorrow.</strong> 
+                Our dedicated team is committed to providing you with comprehensive support throughout your academic journey.
+            </p>
+            <a href="#contact-form" class="px-8 py-3 bg-yellow-400 text-black font-semibold rounded-full hover:bg-yellow-500 transition">
+                Explore Opportunities
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {% include 'mriif/footer.html' %}
+</body>
+</html>

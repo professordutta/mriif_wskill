@@ -1,0 +1,39 @@
+# Node.js dependencies
+world_skills/node_modules/
+
+# Tailwind CSS output
+world_skills/static/css/main.css
+world_skills/static/CACHE
+
+# Preline copied files
+world_skills/static/preline/dist/
+
+
+world_skills/staticfiles
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python virtual environment
+m1/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django specific
+
+# Additional paths
+/world_skills/world_skills/__pycache__
+/world_skills/app/__pycache__
+/world_skills/app/migrations/__pycache__
+/world_skills/.env
