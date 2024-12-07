@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSDC World Skills Academy - About Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation (Placeholder - replace with actual navigation) -->
+    {% include 'mriif/navbar.html' %}
+    <!-- Hero Section -->
+    <div class="relative bg-cover bg-center text-white bg-no-repeat py-20" style="background-image: url('{% static "images/about_img.jpg" %}');">
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">NSDC World Skills Academy</h1>
+            <p class="max-w-3xl mx-auto text-xl mb-8">Empowering Youth, Excellence in Skills, Global Opportunities</p>
+            <a href="#mission" class="px-8 py-3 bg-yellow-400 text-black font-semibold rounded-full hover:bg-yellow-500 transition">Learn More</a>
+        </div>
+    </div>
+
+    <!-- Mission and Vision -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="bg-white shadow-lg rounded-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Our Mission</h2>
+                <p class="text-gray-600">At World Skills Academy, our mission is to serve as a launchpad for youth, equipping them with industry-relevant skills through state-of-the-art training facilities. We are committed to preparing the next generation of leaders and innovators who can compete and win at prestigious global platforms.</p>
+                <div class="mt-6 flex space-x-4">
+                    <i class="fas fa-rocket text-yellow-500 text-4xl"></i>
+                    <i class="fas fa-graduation-cap text-yellow-500 text-4xl"></i>
+                    <i class="fas fa-trophy text-yellow-500 text-4xl"></i>
+                </div>
+            </div>
+            <div class="bg-white shadow-lg rounded-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Our Vision</h2>
+                <p class="text-gray-600">Our vision is to establish World Skills Academy as a premier center of excellence where youth are not only trained in world-class skills but are also prepared to bring home medals from prestigious WorldSkills competitions. We aim to create a launchpad for aspiring professionals who can showcase their talent on the global stage.</p>
+                <div class="mt-6 flex space-x-4">
+                    <i class="fas fa-globe text-yellow-500 text-4xl"></i>
+                    <i class="fas fa-medal text-yellow-500 text-4xl"></i>
+                    <i class="fas fa-user-graduate text-yellow-500 text-4xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- World Skills Competition Section -->
+    <div class="section bg-yellow-50 py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">About WorldSkills Competition</h2>
+            <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
+                <p class="text-gray-600 mb-4">The WorldSkills Competition is a prestigious global event showcasing excellence in vocational skills, first held in 1950 in Madrid, Spain. It brings together young professionals from around the world to compete in various skill categories, including technology, manufacturing, arts, and services.</p>
+                <div class="flex justify-center space-x-8 mt-8">
+                    <div class="text-center">
+                        <h3 class="text-4xl font-bold text-yellow-500">47+</h3>
+                        <p class="text-gray-600">Editions Held</p>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-4xl font-bold text-yellow-500">80+</h3>
+                        <p class="text-gray-600">Countries Participating</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partners Section -->
+    <div class="container mx-auto px-4 py-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-12">Our Partners</h2>
+        <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12">
+            <div class="w-28 h-20 md:w-32 md:h-24 lg:w-36 lg:h-28 flex justify-center items-center">
+                <img src="{% static 'images/nsdc_logo.png' %}" alt="NSDC Logo" class="max-h-full max-w-full">
+            </div>
+            <div class="w-28 h-20 md:w-32 md:h-24 lg:w-36 lg:h-28 flex justify-center items-center">
+                <img src="{% static 'images/mrlogo.png' %}" alt="Manav Rachna Logo" class="max-h-full max-w-full">
+            </div>
+            <div class="w-28 h-20 md:w-32 md:h-24 lg:w-36 lg:h-28 flex justify-center items-center">
+                <img src="{% static 'images/kedman.png' %}" alt="KEDMAN Skilling Logo" class="max-h-full max-w-full">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Call to Action -->
+    <div class="section bg-yellow-300 py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Your Skill Journey Starts Here</h2>
+            <p class="max-w-2xl mx-auto text-gray-700 mb-8">Join World Skills Academy and transform your potential into global success. Get ready to learn, compete, and excel!</p>
+            <a href="#" class="px-8 py-3 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition">Explore Programs</a>
+        </div>
+    </div>
+
+    <!-- Footer (Placeholder) -->
+    {% include 'mriif/footer.html' %}
+</body>
+</html>
