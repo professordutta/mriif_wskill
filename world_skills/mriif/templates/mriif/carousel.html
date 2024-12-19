@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,7 @@
     <title>Responsive Hero Section</title>
 </head>
 <body class="bg-gray-100">
-    <section class="relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] xl:min-h-[800px] flex items-center justify-center bg-cover bg-center bg-no-repeat" style="background-image: url('https://plus.unsplash.com/premium_photo-1725408034958-e0b4025deda6?q=80&w=2552&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+    <section class="relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] xl:min-h-[800px] flex items-center justify-center bg-cover bg-center bg-no-repeat" style="background-image: url({% static "images/new_cover.png" %});">
         <!-- Overlay -->
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
         
@@ -20,10 +21,10 @@
                 Discover real world skills with Manav Rachna and shape the world.
             </p>
             <div class="mt-6 flex justify-center space-x-4">
-                <a href="#learn-more" class="px-4 py-2 sm:px-6 sm:py-3 bg-yellow-400 text-black font-semibold rounded-md shadow-lg hover:bg-yellow-500 transition">
+                <a href="#my_cards" class="px-4 py-2 sm:px-6 sm:py-3 bg-yellow-400 text-black font-semibold rounded-md shadow-lg hover:bg-yellow-500 transition">
                     Learn More
                 </a>
-                <a href="#contact-us" class="px-4 py-2 sm:px-6 sm:py-3 bg-transparent border border-white font-semibold rounded-md text-white hover:bg-white hover:text-black transition">
+                <a href="{% url "contact" %}" class="px-4 py-2 sm:px-6 sm:py-3 bg-transparent border border-white font-semibold rounded-md text-white hover:bg-white hover:text-black transition">
                     Contact Us
                 </a>
             </div>

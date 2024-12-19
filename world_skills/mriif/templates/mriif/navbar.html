@@ -12,7 +12,7 @@
         <div class="container mx-auto flex items-center justify-between px-4 py-3">
             <!-- Logo -->
             <div class="text-lg font-bold">
-                <a href="#" class="flex items-center">
+                <a href="{% url "home" %}" class="flex items-center">
                     <img 
                         src="{% static "images/mr.png" %}" 
                         alt="Brand Logo" 
@@ -30,10 +30,10 @@
 
             <!-- Navigation Links -->
             <div id="menu" class="hidden lg:flex lg:items-center lg:space-x-6">
-                <a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
-                <a href="{% url 'about' %}" class="hover:text-gray-300">About</a>
+                <a href="{% url 'home' %}" class="hover:text-gray-300 {% if request.resolver_match.url_name == 'home' %} text-yellow-400 {% endif %}">Home</a>
+                <a href="{% url 'about' %}" class="hover:text-gray-300 {% if request.resolver_match.url_name == 'about' %} text-yellow-400 {% endif %}">About</a>
                 <a href="#" class="hover:text-gray-300">Services</a>
-                <a href="{% url 'contact' %}" class="hover:text-gray-300">Contact</a>
+                <a href="{% url 'contact' %}" class="hover:text-gray-300 {% if request.resolver_match.url_name == 'contact' %} text-yellow-400 {% endif %}">Contact</a>
             </div>
         </div>
 

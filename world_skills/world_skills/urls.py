@@ -20,6 +20,9 @@ from mriif import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+admin.site.site_header = 'NSDC World Skills Academy'
+admin.site.site_title = 'NSDC World Skills Academy'
+admin.site.index_title = 'Welcome to NSDC World Skills Academy'
 urlpatterns = [
     # your other url patterns
     path('admin/', admin.site.urls),

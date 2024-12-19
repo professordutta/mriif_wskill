@@ -24,10 +24,10 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-gray-300">Home</a></li>
-                        <li><a href="#" class="hover:text-gray-300">About</a></li>
+                        <li><a href="{% url "home" %}" class="hover:text-gray-300">Home</a></li>
+                        <li><a href="{% url "about" %}" class="hover:text-gray-300">About</a></li>
                         <li><a href="#" class="hover:text-gray-300">Services</a></li>
-                        <li><a href="#" class="hover:text-gray-300">Contact</a></li>
+                        <li><a href="{% url "contact" %}" class="hover:text-gray-300">Contact</a></li>
                     </ul>
                 </div>
 
@@ -44,8 +44,8 @@
             <div class="mt-8 border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400 text-sm">&copy; 2024 NSDC World Skills Academy. All rights reserved.</p>
                 <div class="flex space-x-4 mt-4 md:mt-0">
-                    <a href="#" class="hover:text-gray-300">Privacy Policy</a>
-                    <a href="#" class="hover:text-gray-300">Terms of Service</a>
+                    {% comment %} <a href="#" class="hover:text-gray-300">Privacy Policy</a>
+                    <a href="#" class="hover:text-gray-300">Terms of Service</a> {% endcomment %}
                 </div>
             </div>
         </div>
