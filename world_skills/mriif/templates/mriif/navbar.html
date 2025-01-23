@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responsive Navbar</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <nav class="bg-gray-800 text-white">
@@ -14,10 +15,9 @@
             <div class="text-lg font-bold">
                 <a href="{% url "home" %}" class="flex items-center">
                     <img 
-                        src="{% static "images/mr.png" %}" 
+                        src="{% static 'images/mr.png' %}" 
                         alt="Brand Logo" 
-                        class="h-15 w-auto"
-                    >
+                        class="h-15 w-auto"/>
                 </a>
             </div>
 
@@ -30,19 +30,164 @@
 
             <!-- Navigation Links -->
             <div id="menu" class="hidden lg:flex lg:items-center lg:space-x-6">
-                <a href="{% url 'home' %}" class="hover:text-gray-300 {% if request.resolver_match.url_name == 'home' %} text-yellow-400 {% endif %}">Home</a>
-                <a href="{% url 'about' %}" class="hover:text-gray-300 {% if request.resolver_match.url_name == 'about' %} text-yellow-400 {% endif %}">About</a>
-                <a href="#" class="hover:text-gray-300">Services</a>
-                <a href="{% url 'contact' %}" class="hover:text-gray-300 {% if request.resolver_match.url_name == 'contact' %} text-yellow-400 {% endif %}">Contact</a>
+                <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %} text-yellow-400 {% endif %} hover:text-gray-300">Home</a>
+                <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %} text-yellow-400 {% endif %} hover:text-gray-300">About</a>
+                <a href="{% url 'hackathon' %}" class="nav-link {% if request.resolver_match.url_name == 'hackathon' %} text-yellow-400 {% endif %} hover:text-gray-300">Hackathon</a>
+                <a href="{% url 'spoc_registration' %}" class="nav-link {% if request.resolver_match.url_name == 'spoc_registration' %} text-yellow-400 {% endif %} hover:text-gray-300">Spoc Registration</a>
+                <a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %} text-yellow-400 {% endif %} hover:text-gray-300">Contact</a>
+                <!-- Added LMS Button -->
+                <a href="https://www.lms.nsdcwsa.org" class="nav-link hover:text-gray-300 text-purple-400 transition duration-300 transform hover:scale-105 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    LMS
+                </a>
+
+                <!-- Authentication Links -->
+                {% if user.is_authenticated %}
+                <div class="relative">
+                    <button id="avatar-menu-toggle" class="flex items-center focus:outline-none">
+                        <img 
+                            src="{% static 'images/avatar.jpeg' %}" 
+                            alt="Avatar" 
+                            class="h-9 w-9 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="avatar-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg z-50">
+                        <div class="px-4 py-2 text-white font-semibold text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-400">Hello,</span> 
+                                <span class="text-indigo-400">{{ user.username }}</span>
+                                {% if user.is_superuser %}
+                                    <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        Admin
+                                    </span>
+                                {% endif %}
+                                {% if user.groups.all.0.name == 'spocs' %}
+                                    <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                        </svg>
+                                        SPOC
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if user.groups.all.0.name == 'spocs' %}
+                            <a href="{% url 'submit_proposal' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Submit Proposals
+                                </div>
+                            </a>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                        <a href="{% url 'submit_proposal' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Submit Proposals
+                            </div>
+                        </a>
+                    {% endif %}
+                        <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-red-400 hover:bg-gray-600 transition duration-300 transform hover:scale-105 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                
+                {% else %}
+                    <!-- Login -->
+                    <a href="{% url 'login' %}" class="flex items-center hover:text-gray-300 text-green-400 transition duration-300 transform hover:scale-105 {% if request.resolver_match.url_name == 'login' %} text-yellow-400 {% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2V7c0-1.104-.896-2-2-2m0 0C10.896 5 10 5.896 10 7v2c0 1.104.896 2 2 2zm0 4v6m0 0H8m4 0h4m-4-6v6" />
+                        </svg>
+                        Login
+                    </a>
+
+                {% endif %}
             </div>
         </div>
 
-        <!-- Dropdown Menu for Small Screens -->
-        <div id="dropdown" class="hidden lg:hidden bg-gray-800">
-            <a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-700">Home</a>
-            <a href="{% url 'about' %}" class="block px-4 py-2 hover:bg-gray-700">About</a>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-700">Services</a>
-            <a href="{% url 'contact' %}" class="block px-4 py-2 hover:bg-gray-700">Contact</a>
+         <!-- Dropdown Menu for Small Screens -->
+         <div id="dropdown" class="hidden lg:hidden bg-gray-800">
+            {% if user.is_authenticated %}
+            <div class="flex items-center justify-between px-4 py-2 text-white">
+                <div class="flex items-center gap-2">
+                    <img 
+                        src="{% static 'images/avatar.jpeg' %}" 
+                        alt="Avatar" 
+                        class="h-8 w-8 rounded-full mr-2">
+                    <span class="text-indigo-400 font-semibold">{{ user.username }}</span>
+                    {% if user.is_superuser %}
+                        <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            Admin
+                        </span>
+                    {% endif %}
+                    {% if user.groups.all.0.name == 'spocs' %}
+                        <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                            </svg>
+                            SPOC
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if user.groups.all.0.name == 'spocs' %}
+                <a href="{% url 'submit_proposal' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 border-t border-gray-600">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Submit Proposals
+                    </div>
+                </a>
+            {% endif %}
+            {% if user.is_superuser %}
+            <a href="{% url 'submit_proposal' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 border-t border-gray-600">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Submit Proposals
+                </div>
+            </a>
+        {% endif %}
+            <a href="{% url 'logout' %}" class="block px-4 py-2 text-red-400 hover:bg-gray-600 border-t border-gray-600">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    </svg>
+                    Logout
+                </div>
+            </a>
+            {% endif %}
+            <a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'home' %} text-yellow-400 {% endif %}">Home</a>
+            <a href="{% url 'about' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'about' %} text-yellow-400 {% endif %}">About</a>
+            <a href="{% url 'hackathon' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'hackathon' %} text-yellow-400 {% endif %}">Hackathon</a>
+            <a href="{% url 'spoc_registration' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'spoc_registration' %} text-yellow-400 {% endif %}">Spoc Registration</a>
+            <a href="{% url 'contact' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'contact' %} text-yellow-400 {% endif %}">Contact</a>
+            <!-- Added LMS Button for mobile -->
+            <a href="https://www.lms.nsdcwsa.org" class="block px-4 py-2 hover:bg-gray-700 text-purple-400">LMS</a>
+
+            {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-700 text-green-400 {% if request.resolver_match.url_name == 'login' %} text-yellow-400 {% endif %}">Login</a>
+            {% endif %}
         </div>
     </nav>
 
@@ -53,6 +198,15 @@
         menuToggle.addEventListener('click', () => {
             dropdown.classList.toggle('hidden');
         });
+
+        // Toggle the avatar dropdown visibility
+        const avatarToggle = document.getElementById('avatar-menu-toggle');
+        const avatarDropdown = document.getElementById('avatar-dropdown');
+        if (avatarToggle && avatarDropdown) {
+            avatarToggle.addEventListener('click', () => {
+                avatarDropdown.classList.toggle('hidden');
+            });
+        }
     </script>
 </body>
 </html>

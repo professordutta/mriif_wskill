@@ -1,0 +1,364 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National XR Learning Hackathon 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html {
+            scroll-padding-top: 80px; /* Adjust this value based on your navigation height */
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    {% include 'mriif/navbar.html' %}
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-indigo-900 to-purple-800 text-white py-20 px-4">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-fade-in">National XR Learning Hackathon: 2025</h1>
+            <p class="text-2xl md:text-3xl mb-2">Reimagine the Reality</p>
+            <p class="text-xl">Organised By</p>
+            <p class="text-2xl font-semibold">National Skill Development Corporation</p>
+        </div>
+    </header>
+
+    <!-- Navigation Pills -->
+    <div class="bg-white sticky top-0 z-30 shadow-md"> 
+        <div class="container mx-auto px-4 py-3">
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex flex-wrap justify-center gap-2">
+                <a href="#introduction" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Introduction</a>
+                <a href="#features" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Key Features</a>
+                <a href="#structure" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Structure</a>
+                <a href="#stakeholders" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Stakeholders</a>
+                <a href="#calendar" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Calendar</a>
+                <a href="#rules" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Rules</a>
+                <a href="#rewards" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Rewards</a>
+                <a href="#categories" class="px-4 py-2 rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Categories</a>
+            </nav>
+
+            <!-- Mobile Navigation -->
+            <div class="md:hidden">
+                <div class="flex items-center justify-between px-2">
+                    <span class="text-indigo-900 font-semibold text-lg">Know More</span>
+                    <button id="mobile-menu-button" class="flex items-center space-x-2 bg-indigo-900 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 transition-colors">
+                        <span class="text-sm font-medium">Menu</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="mobile-menu" class="hidden absolute left-0 right-0 bg-white shadow-lg mt-2">
+                    <div class="flex flex-col p-4 max-h-[80vh] overflow-y-auto border-t-2 border-indigo-100">
+                        <a href="#introduction" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Introduction
+                        </a>
+                        <a href="#features" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Key Features
+                        </a>
+                        <a href="#structure" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Structure
+                        </a>
+                        <a href="#stakeholders" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Stakeholders
+                        </a>
+                        <a href="#calendar" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Calendar
+                        </a>
+                        <a href="#rules" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Rules
+                        </a>
+                        <a href="#rewards" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Rewards
+                        </a>
+                        <a href="#categories" class="px-4 py-3 text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors flex items-center">
+                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-3"></span>
+                            Categories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Introduction -->
+        <section id="introduction" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Introduction</h2>
+            <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+                <p class="text-gray-700 leading-relaxed">
+                    In an era of rapidly advancing technology, Extended Reality (XR) is transforming the way we learn, teach, and engage with content. To accelerate the adoption of XR in education and Skill development, the National Skill Development Corporation (NSDC) will be organising National XR Learning Hackathon.
+                </p>
+                <p class="text-gray-700 leading-relaxed">
+                    This initiative seeks to identify top-performing institutions/Students across India to spearhead XR content development using the cutting-edge EON Reality Platform.
+                </p>
+                <p class="text-gray-700 leading-relaxed">
+                    The goal is to empower students to create immersive learning experiences that align with India's vision for a technologically empowered future.
+                </p>
+            </div>
+        </section>
+
+        <!-- Key Features -->
+        <section id="features" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Key Features</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border border-indigo-100">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">Purpose and Objectives</h3>
+                    <ul class="list-disc ml-6 space-y-2 text-gray-700">
+                        <li>Promote awareness and adoption of XR Learning in India</li>
+                        <li>Foster innovation in educational/skill content development</li>
+                        <li>Identify and support top academic institutions</li>
+                        <li>Build a sustainable ecosystem of XR-enabled learning solutions</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border border-indigo-100">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">Eligibility</h3>
+                    <ul class="list-disc ml-6 space-y-2 text-gray-700">
+                        <li>AICTE Affiliated Institutions</li>
+                        <li>UGC Affiliated Institutions</li>
+                        <li>DGT Affiliated Institutions</li>
+                        <li>Vocational Training Institutes</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Structure Section -->
+        <section id="structure" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Hackathon Structure</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">Registration Process</h3>
+                    <ul class="list-disc ml-6 space-y-2 text-gray-700">
+                        <li>One Institute may register up to 10 Teams per Category</li>
+                        <li>Each Team comprises 4 Students and 1 Faculty Member</li>
+                        <li>Teams submit proposals addressing educational/skill challenges</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">Evaluation Process</h3>
+                    <ul class="list-disc ml-6 space-y-2 text-gray-700">
+                        <li>Expert panel evaluation of proposals</li>
+                        <li>Shortlisted teams receive XR platform licenses</li>
+                        <li>Comprehensive online training provided</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stakeholders Section -->
+        <section id="stakeholders" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Stakeholder Engagement</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">NSDC</h3>
+                    <p class="text-gray-700">Policy design and overall supervision of the hackathon implementation.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">MREI</h3>
+                    <p class="text-gray-700">Technical and operational assistance, including registration and training management.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">EON XR</h3>
+                    <p class="text-gray-700">Technical and subject matter expert support for implementation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendar -->
+        <section id="calendar" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Calendar</h2>
+            <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+                <table class="w-full">
+                    <thead class="bg-indigo-900 text-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left">Event</th>
+                            <th class="px-6 py-3 text-left">Timeline</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-indigo-100">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">Release of Guidelines</td>
+                            <td class="px-6 py-4">Jan 2025</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">Registration Period</td>
+                            <td class="px-6 py-4">Jan – March 2025</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">National Hackathon</td>
+                            <td class="px-6 py-4">May 2025</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Rules Section -->
+        <section id="rules" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Rules and Regulations</h2>
+            <div class="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
+                <div class="space-y-4">
+                    <h3 class="text-xl font-semibold text-blue-800">Evaluation Criteria</h3>
+                    <ul class="list-disc ml-6 space-y-2 text-gray-700">
+                        <li>Creativity and Innovation</li>
+                        <li>Feasibility and Impact</li>
+                        <li>Technical Execution</li>
+                        <li>Scalability</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rewards Section -->
+        <section id="rewards" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Rewards and Recognition</h2>
+            <div class="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
+                <ul class="list-disc ml-6 space-y-2 text-gray-700">
+                    <li>Extended EON Reality Platform licenses for winners</li>
+                    <li>Top 3 Teams of each category will receive awards</li>
+                    <li>Recognition and visibility at national level</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section id="categories" class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-indigo-900 border-b-2 border-indigo-200 pb-2">Hackathon Categories</h2>
+            <div id="categoriesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    {% include 'mriif/footer.html' %}
+
+    <script>
+        // Categories data
+        const categories = [
+            {
+                name: 'Digital Construction & Design',
+                description: 'Construction, Architecture, BIM with focus on virtual walkthroughs, construction site simulations, and architectural visualization.'
+            },
+            {
+                name: 'Creative Media & Digital Arts',
+                description: 'Graphic Design, Digital Marketing with focus on immersive content for VR/AR platforms and interactive art installations.'
+            },
+            {
+                name: 'Automotive Engineering & Technologies',
+                description: 'Automotive Technology and Vehicle Design with focus on XR-based car design and virtual vehicle repairs.'
+            },
+            {
+                name: 'Healthcare & Medical Technologies',
+                description: 'Medical Laboratory Technology, Nursing with focus on surgical training and virtual patient environments.'
+            },
+            {
+                name: 'IT Software Solutions for Business',
+                description: 'Software Development, Network Systems with focus on enterprise XR solutions and virtual workspaces.'
+            },
+            {
+                name: 'Mechatronics & Robotics',
+                description: 'Mechatronics, Automation with focus on virtual robotics environments for training and testing.'
+            },
+            {
+                name: 'Hospitality & Tourism',
+                description: 'Hotel Management, Tourism with focus on virtual tours and immersive travel experiences.'
+            },
+            {
+                name: 'Fashion Technology & Design',
+                description: 'Fashion Design, Pattern Making with focus on virtual fashion shows and XR-based fitting rooms.'
+            },
+            {
+                name: 'Electronics & Electrical Engineering',
+                description: 'Electronics, Electrical Installation with focus on virtual circuit design and fault detection.'
+            },
+            {
+                name: 'Sustainability & Green Technologies',
+                description: 'Environmental Sustainability with focus on VR/AR environmental simulations.'
+            },
+            {
+                name: 'Agriculture & Agribusiness',
+                description: 'Agricultural Technology with focus on crop simulations and virtual farm planning.'
+            },
+            {
+                name: 'Education & Training Technologies',
+                description: 'Teaching, E-learning with focus on virtual classrooms and interactive learning tools.'
+            },
+            {
+                name: 'Logistics & Supply Chain Management',
+                description: 'Logistics, Warehouse Operation with focus on virtual warehouse simulations.'
+            },
+            {
+                name: 'Design & Innovation',
+                description: 'Industrial Design, Product Design with focus on virtual prototyping and collaboration.'
+            },
+            {
+                name: 'Cybersecurity & Digital Forensics',
+                description: 'Cybersecurity training with focus on simulated attacks and virtual forensics.'
+            }
+        ];
+
+        // Render categories
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        categories.forEach(category => {
+            const div = document.createElement('div');
+            div.className = 'bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow';
+            div.innerHTML = `
+                <h4 class="font-semibold text-blue-900 mb-2">${category.name}</h4>
+                <p class="text-gray-700 text-sm">${category.description}</p>
+            `;
+            categoriesContainer.appendChild(div);
+        });
+
+        // Smooth scroll with offset
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                const navHeight = 80; // Adjust this value based on your navigation height
+                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add this to your existing script section
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+    </script>
+</body>
+</html>

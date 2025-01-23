@@ -26,8 +26,14 @@ admin.site.index_title = 'Welcome to NSDC World Skills Academy'
 urlpatterns = [
     # your other url patterns
     path('admin/', admin.site.urls),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logoutuser, name='logout'),
     path('', views.home, name='home'),
     path('contact', views.contact, name='contact'),
     path('about', views.about, name='about'),
     path('skill/<int:skill_id>/', views.skill_detail, name='skill_detail'),
+    path('spoc_registration/', views.spoc_registration, name='spoc_registration'),
+    path('hackathon/', views.hackathon, name='hackathon'),
+    path('download-endorsement-template/', views.download_endorsement_template, name='download_endorsement_template'),
+    path('submit-proposal/', views.submit_proposal, name='submit_proposal'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
