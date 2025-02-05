@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 import os
 from django.contrib import messages
-from .models import Skill, ContactUs, SPOCRegistration, Proposal
+from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration
 from django.core.exceptions import ValidationError
 from .validators import validate_file_size, validate_file_extension
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -189,3 +189,38 @@ def submit_proposal(request):
         'categories_count': categories_count,
         'form': {'fields': {'category': {'choices': Proposal.CATEGORY_CHOICES}}}
     })
+    
+def evaluator_registration(request):
+    if request.method == 'POST':
+        try:
+            cv_file = request.FILES.get('cv_file')
+            if cv_file:
+                validate_file_size(cv_file)
+                validate_file_extension(cv_file)
+                
+            evaluator = EvaluatorRegistration(
+                full_name=request.POST.get('full_name'),
+                email=request.POST.get('email'),
+                mobile=request.POST.get('mobile'),
+                linkedin_url=request.POST.get('linkedin_url'),
+                organization=request.POST.get('organization'),
+                designation=request.POST.get('designation'),
+                experience=request.POST.get('experience'),
+                expertise=request.POST.getlist('expertise'),  # Use getlist() for multiple select
+                cv_file=cv_file
+            )
+            evaluator.save()
+            messages.success(request, "Thank you for your interest! Your application has been submitted successfully.")
+            return redirect('evaluator_registration')
+        except ValidationError as e:
+            messages.error(request, e.message)
+            return redirect('evaluator_registration')
+        except Exception as e:
+            messages.error(request, "Error in submission. Please ensure all fields are filled correctly including your CV.")
+            return redirect('evaluator_registration')
+
+    # Add categories to context
+    context = {
+        'expertise_choices': Proposal.CATEGORY_CHOICES
+    }
+    return render(request, 'mriif/evaluator-registration.html', context)

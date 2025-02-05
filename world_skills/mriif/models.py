@@ -112,3 +112,25 @@ class Proposal(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+class EvaluatorRegistration(models.Model):
+    # Use the same categories as Proposal model
+    EXPERTISE_CHOICES = Proposal.CATEGORY_CHOICES
+
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    mobile = models.CharField(max_length=10)
+    linkedin_url = models.URLField(blank=True)
+    organization = models.CharField(max_length=200)
+    designation = models.CharField(max_length=100)
+    experience = models.IntegerField()
+    expertise = models.JSONField()  # Store multiple selections as JSON array
+    cv_file = models.FileField(
+        upload_to='evaluator_cvs/',
+        validators=[validate_file_size, validate_file_extension],
+        help_text='Upload your CV (Max 5MB, Allowed formats: PDF, DOC, DOCX)'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.organization}"

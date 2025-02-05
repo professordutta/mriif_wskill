@@ -34,6 +34,7 @@
                 <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %} text-yellow-400 {% endif %} hover:text-gray-300">About</a>
                 <a href="{% url 'hackathon' %}" class="nav-link {% if request.resolver_match.url_name == 'hackathon' %} text-yellow-400 {% endif %} hover:text-gray-300">Hackathon</a>
                 <a href="{% url 'spoc_registration' %}" class="nav-link {% if request.resolver_match.url_name == 'spoc_registration' %} text-yellow-400 {% endif %} hover:text-gray-300">Spoc Registration</a>
+                <a href="{% url 'evaluator_registration' %}" class="nav-link {% if request.resolver_match.url_name == 'evaluator_registration' %} text-yellow-400 {% endif %} hover:text-gray-300">Evaluator Registration</a>
                 <a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %} text-yellow-400 {% endif %} hover:text-gray-300">Contact</a>
                 <!-- Added LMS Button -->
                 <a href="https://www.lms.nsdcwsa.org" class="nav-link hover:text-gray-300 text-purple-400 transition duration-300 transform hover:scale-105 flex items-center">
@@ -181,6 +182,7 @@
             <a href="{% url 'about' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'about' %} text-yellow-400 {% endif %}">About</a>
             <a href="{% url 'hackathon' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'hackathon' %} text-yellow-400 {% endif %}">Hackathon</a>
             <a href="{% url 'spoc_registration' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'spoc_registration' %} text-yellow-400 {% endif %}">Spoc Registration</a>
+            <a href="{% url 'evaluator_registration' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'evaluator_registration' %} text-yellow-400 {% endif %}">Evaluator Registration</a>
             <a href="{% url 'contact' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'contact' %} text-yellow-400 {% endif %}">Contact</a>
             <!-- Added LMS Button for mobile -->
             <a href="https://www.lms.nsdcwsa.org" class="block px-4 py-2 hover:bg-gray-700 text-purple-400">LMS</a>

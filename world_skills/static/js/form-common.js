@@ -8,7 +8,9 @@ class FormHandler {
             messages: {
                 minLength: field => `${field} must be at least ${config.validationRules[field].minLength} characters long`,
                 pattern: config.patternMessages,
-                required: field => `${field.replace('_', ' ')} is required`
+                required: field => `${field.replace('_', ' ')} is required`,
+                min: field => `${field.replace('_', ' ')} must be at least ${config.validationRules[field].min}`,
+                max: field => `${field.replace('_', ' ')} must not exceed ${config.validationRules[field].max}`
             },
             stepFields: config.stepFields,
             onUpdate: config.onUpdate || (() => {})
@@ -84,7 +86,7 @@ class FormHandler {
         this.removeFieldError(input);
 
         if (rules.required && !value) {
-            const message = `${input.name.replace('_', ' ')} is required`;
+            const message = this.formState.messages.required(input.name);
             this.errorMessages.add(message);
             this.showFieldError(input, message);
             return false;
@@ -102,6 +104,29 @@ class FormHandler {
             this.errorMessages.add(message);
             this.showFieldError(input, message);
             return false;
+        }
+
+        // Add numeric validation with messages
+        if ((rules.min !== undefined || rules.max !== undefined) && value !== '') {
+            const numValue = Number(value);
+            if (isNaN(numValue)) {
+                const message = `${input.name.replace('_', ' ')} must be a number`;
+                this.errorMessages.add(message);
+                this.showFieldError(input, message);
+                return false;
+            }
+            if (rules.min !== undefined && numValue < rules.min) {
+                const message = this.formState.messages.min(input.name);
+                this.errorMessages.add(message);
+                this.showFieldError(input, message);
+                return false;
+            }
+            if (rules.max !== undefined && numValue > rules.max) {
+                const message = this.formState.messages.max(input.name);
+                this.errorMessages.add(message);
+                this.showFieldError(input, message);
+                return false;
+            }
         }
 
         input.classList.remove('border-gray-300', 'border-red-500');

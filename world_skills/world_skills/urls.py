@@ -36,4 +36,5 @@ urlpatterns = [
     path('hackathon/', views.hackathon, name='hackathon'),
     path('download-endorsement-template/', views.download_endorsement_template, name='download_endorsement_template'),
     path('submit-proposal/', views.submit_proposal, name='submit_proposal'),
+    path('evaluator_registration/', views.evaluator_registration, name='evaluator_registration'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

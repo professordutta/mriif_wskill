@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOC Registration - XR Learning Hackathon 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'js/tailwind.config.js' %}"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50">
+    <!-- Include background -->
+    {% include 'mriif/background.html' %}
+
+    <!-- Include navbar -->
+    {% include 'mriif/navbar.html' %}
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Progress bar -->
+        <div class="max-w-7xl mx-auto mb-8">
+            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div id="progress-bar" class="progress-bar h-full bg-gradient-to-r from-yellow-400 to-yellow-600 w-0"></div>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto">
+            <!-- Sidebar -->
+            <div class="lg:w-1/4">
+                <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
+                    <div class="flex items-center justify-center mb-8">
+                        <img src="{% static 'images/hackathon/hero-main-char.svg' %}" 
+                             alt="Hackathon Hero" 
+                             class="h-32 w-auto animate-float hover:scale-110 transition-transform duration-300 cursor-pointer">
+                    </div>
+                    
+                    <!-- Replace the existing steps markup in the sidebar with this Tailwind-only version -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Registration Steps</h3>
+                        <div class="relative">
+                            <!-- Step 1 -->
+                            <div class="relative pl-12 pb-8 group">
+                                <!-- Number Circle -->
+                                <div class="absolute left-0 transform transition-all duration-300 ease-in-out group-hover:scale-110">
+                                    <div class="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg shadow-yellow-200">
+                                        <span class="text-white font-semibold">1</span>
+                                    </div>
+                                </div>
+                                <!-- Vertical Line -->
+                                <div class="absolute left-4 top-8 w-0.5 h-full bg-gray-200">
+                                    <div class="w-full h-0 bg-green-500 transition-all duration-500"></div>
+                                </div>
+                                <!-- Content -->
+                                <div class="ml-4 transform transition-all duration-300 translate-x-0 group-hover:translate-x-2">
+                                    <h4 class="text-sm font-semibold text-yellow-600">Institute Details</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Basic information about your institution</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="relative pl-12 pb-8 group">
+                                <!-- Number Circle -->
+                                <div class="absolute left-0 transform transition-all duration-300 ease-in-out group-hover:scale-110">
+                                    <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span class="text-gray-600 font-semibold">2</span>
+                                    </div>
+                                </div>
+                                <!-- Vertical Line -->
+                                <div class="absolute left-4 top-8 w-0.5 h-full bg-gray-200">
+                                    <div class="w-full h-0 bg-green-500 transition-all duration-500"></div>
+                                </div>
+                                <!-- Content -->
+                                <div class="ml-4 transform transition-all duration-300 translate-x-0 group-hover:translate-x-2">
+                                    <h4 class="text-sm font-semibold text-gray-600">SPOC Information</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Contact details for coordination</p>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="relative pl-12 group">
+                                <!-- Number Circle -->
+                                <div class="absolute left-0 transform transition-all duration-300 ease-in-out group-hover:scale-110">
+                                    <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span class="text-gray-600 font-semibold">3</span>
+                                    </div>
+                                </div>
+                                <!-- Content -->
+                                <div class="ml-4 transform transition-all duration-300 translate-x-0 group-hover:translate-x-2">
+                                    <h4 class="text-sm font-semibold text-gray-600">Document Upload</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Upload required documents</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress stats -->
+                    <div class="mt-6 p-4 bg-gray-50 rounded-xl">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-600">Progress</span>
+                            <span id="progress-percentage" class="text-sm font-bold text-yellow-600">0%</span>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            <span id="fields-completed">0</span> of <span id="total-fields">15</span> fields completed
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-4 bg-yellow-50 rounded-xl">
+                        <h4 class="text-sm font-semibold text-yellow-800 mb-2">Need Help?</h4>
+                        <p class="text-sm text-yellow-700 mb-3">Contact our support team for assistance</p>
+                        <a href="#" class="text-yellow-600 text-sm font-medium hover:text-yellow-700 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            support@hackathon.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Form -->
+            <div class="lg:w-3/4">
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl hover:shadow-yellow-200/50 transition-all duration-500 p-8">
+                    <div class="max-w-3xl mx-auto">
+                        <header class="text-center mb-10">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-2">Evaluator Self-Nomination</h2>
+                            <p class="text-gray-600">National XR Learning Hackathon: 2025</p>
+                        </header>
+
+                        {% if messages %}
+                        <div class="mb-8">
+                            {% for message in messages %}
+                            <div class="p-4 rounded-xl shadow-sm backdrop-blur-sm transition duration-300 ease-in-out 
+                                {% if message.tags == 'success' %}
+                                bg-green-50/90 text-green-700 border border-green-200
+                                {% else %}
+                                bg-red-50/90 text-red-700 border border-red-200
+                                {% endif %}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <form id="registration-form" method="POST" class="space-y-8" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Step navigation -->
+                            <div class="flex justify-between items-center mb-8">
+                                <button type="button" id="prev-step" 
+                                        class="px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                    Previous
+                                </button>
+                                <div class="flex space-x-2">
+                                    <span class="w-2 h-2 rounded-full step-dot" data-step="1"></span>
+                                    <span class="w-2 h-2 rounded-full step-dot" data-step="2"></span>
+                                    <span class="w-2 h-2 rounded-full step-dot" data-step="3"></span>
+                                </div>
+                                <button type="button" id="next-step" 
+                                        class="px-4 py-2 text-yellow-600 hover:text-yellow-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                                    Next
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Form steps -->
+                            <div id="step-1" class="form-step">
+                                <!-- Personal Details Section -->
+                                <div class="bg-gray-50 rounded-xl p-6 space-y-6">
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                        <svg class="w-6 h-6 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                        Personal Details
+                                    </h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name*</label>
+                                            <input type="text" name="full_name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email ID*</label>
+                                            <input type="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Mobile Number*</label>
+                                            <input type="tel" name="mobile" pattern="[0-9]{10}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile URL</label>
+                                            <input type="url" name="linkedin_url" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="step-2" class="form-step hidden">
+                                <!-- Professional Information Section -->
+                                <div class="bg-gray-50 rounded-xl p-6 space-y-6">
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                        <svg class="w-6 h-6 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                        Professional Information
+                                    </h3>
+                                    
+                                    <div class="space-y-6">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Current Organization*</label>
+                                            <input type="text" name="organization" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Designation*</label>
+                                            <input type="text" name="designation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Years of Experience*</label>
+                                            <input type="number" name="experience" required min="0" max="50" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Areas of Expertise*</label>
+                                            <select name="expertise" multiple required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                {% for value, label in expertise_choices %}
+                                                <option value="{{ value }}">{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="step-3" class="form-step hidden">
+                                <!-- CV Upload Section -->
+                                <div class="bg-gray-50 rounded-xl p-6 space-y-6">
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                        <svg class="w-6 h-6 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        CV Upload
+                                    </h3>
+                                    
+                                    <div class="space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Upload your CV*
+                                        </label>
+                                        <div class="relative">
+                                            <input type="file" 
+                                                name="cv_file" 
+                                                required 
+                                                accept=".pdf,.doc,.docx"
+                                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                id="file-upload"
+                                                tabindex="0">
+                                            <label for="file-upload" class="cursor-pointer w-full flex items-center justify-center px-6 py-4 border-2 border-gray-300 border-dashed rounded-lg transition duration-300 ease-in-out hover:border-yellow-500 bg-white">
+                                                <div class="space-y-1 text-center">
+                                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                            d="M9 13h6m-3-3v6M7 16a2 2 0 002 2h6a2 2 0 002-2V8a2 2 0 00-2-2h-6a2 2 0 00-2 2v8z"/>
+                                                    </svg>
+                                                    <div class="flex flex-col items-center text-sm text-gray-600">
+                                                        <span class="font-medium text-yellow-600">Click to upload</span> or drag and drop
+                                                        <p class="text-xs text-gray-500">PDF or Word document (max. 5MB)</p>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                            <div id="file-name" class="mt-2 text-sm text-gray-500 text-center hidden">
+                                                Selected file: <span class="font-medium text-gray-900"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center space-x-3 mt-6">
+                                        <input type="checkbox" name="declaration" id="declaration" required class="h-5 w-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+                                        <label for="declaration" class="text-sm text-gray-700">
+                                            I confirm my interest in serving as an evaluator and declare that the information provided is accurate.
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit button (hidden initially) -->
+                            <div id="submit-section" class="hidden transform transition-all duration-300 ease-in-out">
+                                <div class="border-t pt-6 mt-8">
+                                    <button type="submit" 
+                                            class="w-full flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-300">
+                                        <span class="mr-2">Submit Registration</span>
+                                        <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Component -->
+    <div id="custom-alert" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="fixed inset-0 bg-black opacity-50"></div>
+        <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm w-full mx-4 relative z-10 transform transition-all duration-300 scale-95 opacity-0">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-2">Error</h3>
+                <p id="alert-message" class="text-sm text-gray-500 mb-4"></p>
+                <button id="close-alert" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm transition duration-200">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include footer -->
+    {% include 'mriif/footer.html' %}
+
+    <script src="{% static 'js/form-common.js' %}"></script>
+    <script>
+        const evaluatorForm = new FormHandler('registration-form', {
+            totalSteps: 3,
+            validationRules: {
+                full_name: { required: true, minLength: 3 },
+                email: { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+                mobile: { required: true, pattern: /^[0-9]{10}$/ },
+                organization: { required: true, minLength: 2 },
+                designation: { required: true, minLength: 2 },
+                experience: { required: true, min: 0, max: 50 },
+                expertise: { required: true },
+                cv_file: { required: true },
+                declaration: { required: true }
+            },
+            patternMessages: {
+                email: 'Please enter a valid email address',
+                mobile: 'Mobile number must be 10 digits',
+            },
+            stepFields: {
+                1: ['full_name', 'email', 'mobile', 'linkedin_url'],
+                2: ['organization', 'designation', 'experience', 'expertise'],
+                3: ['cv_file', 'declaration']
+            }
+        });
+    </script>
+
+</body>
+</html>
