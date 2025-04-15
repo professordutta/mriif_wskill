@@ -1,0 +1,337 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Application - NSDC World Skills Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        /* Custom animations and styles */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Improved section headings */
+        .section-heading {
+            position: relative;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .section-heading::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 50px;
+            background: linear-gradient(to right, #eab308, #fbbf24);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50">
+    <!-- Include background -->
+    {% include 'mriif/background.html' %}
+    
+    <!-- Include navbar and messages -->
+    {% include 'mriif/navbar.html' %}
+    {% include 'mriif/messages.html' %}
+
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-8 animate-fade-in">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Course Application Form</h1>
+                <p class="text-gray-600">Join our specialized training programs to enhance your skills</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6 animate-fade-in">
+                <form method="post" id="applicationForm" class="space-y-8" onsubmit="return validateForm()">
+                    {% csrf_token %}
+                    
+                    <!-- Course Selection Section -->
+                    <div>
+                        <h3 class="section-heading text-xl text-gray-800">Course Selection</h3>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            {% if not selected_course_type %}
+                            <div>
+                                <label for="course_type" class="block text-sm font-medium text-gray-700 mb-2">Select Course Type:</label>
+                                <select class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="course_type" name="course_type" required>
+                                    <option value="">-- Select a Course Type --</option>
+                                    {% for key, value in course_types.items %}
+                                    <option value="{{ key }}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="view_courses" class="block text-sm font-medium text-gray-700 mb-2">&nbsp;</label>
+                                <button type="button" id="view_courses" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <i class="fas fa-search mr-2"></i> View Available Skills
+                                </button>
+                            </div>
+                            {% else %}
+                            <div>
+                                <label for="course_type" class="block text-sm font-medium text-gray-700 mb-2">Course Type:</label>
+                                <div class="flex rounded-md shadow-sm">
+                                    <input type="text" class="flex-1 rounded-l-md border border-gray-300 bg-gray-100 py-2 px-3 shadow-sm focus:outline-none" value="{{ course_type_display }}" readonly>
+                                    <input type="hidden" name="course_type" value="{{ selected_course_type }}">
+                                    <a href="{% url 'course_application' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-r-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <i class="fas fa-edit"></i> Change
+                                    </a>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="course" class="block text-sm font-medium text-gray-700 mb-2">Select Skill:</label>
+                                <select class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="course" name="course" required>
+                                    <option value="">-- Select a Skill --</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course.id }}" {% if selected_course and selected_course.id == course.id %}selected{% endif %} 
+                                        data-fee="{{ course.training_fee }}"
+                                        data-residential="{{ course.residential_fee|default:'0' }}"
+                                        data-duration="{{ course.duration_weeks }}"
+                                        data-mode="{{ course.get_delivery_mode_display }}">
+                                        {{ course.skill.job_title }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div id="course_details" class="mt-4 p-4 bg-gray-50 rounded-lg {% if not selected_course %}hidden{% endif %}">
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-500 mb-1">Training Fee</p>
+                                    <p id="training_fee" class="font-semibold">{% if selected_course %}₹ {{ selected_course.training_fee }}{% else %}--{% endif %}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 mb-1">Duration</p>
+                                    <p id="duration" class="font-semibold">{% if selected_course %}{{ selected_course.duration_weeks }} weeks{% else %}--{% endif %}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 mb-1">Delivery Mode</p>
+                                    <p id="delivery_mode" class="font-semibold">{% if selected_course %}{{ selected_course.get_delivery_mode_display }}{% else %}--{% endif %}</p>
+                                </div>
+                            </div>
+                            
+                            {% if selected_course and selected_course.residential_fee %}
+                            <div class="mt-4 border-t border-gray-200 pt-4">
+                                <div class="flex items-center">
+                                    <input class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-2" type="checkbox" id="include_residential" name="include_residential" {% if residential_preselect %}checked{% endif %}>
+                                    <label class="text-sm text-gray-700" for="include_residential">
+                                        Include Residential Facilities (₹ <span id="residential_fee">{{ selected_course.residential_fee }}</span>)
+                                    </label>
+                                </div>
+                                <div class="mt-3">
+                                    <p class="text-sm text-gray-500">Total: ₹ <span id="total_amount">{% if residential_preselect %}{{ selected_course.training_fee|add:selected_course.residential_fee }}{% else %}{{ selected_course.training_fee }}{% endif %}</span></p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Personal Information Section -->
+                    <div>
+                        <h3 class="section-heading text-xl text-gray-800">Personal Information</h3>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name:</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="first_name" name="first_name" required>
+                            </div>
+                            <div>
+                                <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name:</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="last_name" name="last_name" required>
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email:</label>
+                                <input type="email" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="email" name="email" required>
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone (10 digits):</label>
+                                <input type="tel" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="phone" name="phone" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits" maxlength="10" required>
+                                <div id="phoneError" class="text-red-500 text-sm mt-1" style="display: none;">Phone number must be exactly 10 digits</div>
+                            </div>
+                            <div>
+                                <label for="organization" class="block text-sm font-medium text-gray-700 mb-2">Organization/Institution:</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="organization" name="organization" required>
+                            </div>
+                            <div>
+                                <label for="designation" class="block text-sm font-medium text-gray-700 mb-2">Designation/Role:</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="designation" name="designation" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Address Section -->
+                    <div>
+                        <h3 class="section-heading text-xl text-gray-800">Address Information</h3>
+                        
+                        <div class="grid md:grid-cols-1 gap-6 mb-4">
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Address:</label>
+                                <textarea class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="address" name="address" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="state" class="block text-sm font-medium text-gray-700 mb-2">State:</label>
+                                <select class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="state" name="state" required>
+                                    <option value="">-- Select State --</option>
+                                    {% include 'mriif/states_list.html' %}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City:</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="city" name="city" required>
+                            </div>
+                            <div>
+                                <label for="pincode" class="block text-sm font-medium text-gray-700 mb-2">Pincode:</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="pincode" name="pincode" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Section -->
+                    <div class="pt-4 border-t border-gray-200">
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="text-gray-600 text-sm">
+                                <p><i class="fas fa-info-circle mr-1"></i> By submitting this form, you agree to our terms and privacy policy.</p>
+                            </div>
+                            <button type="submit" class="px-8 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                <i class="fas fa-check-circle mr-2"></i> Submit Application
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% include 'mriif/footer.html' %}
+
+    <script>
+        $(document).ready(function() {
+            // Handle course type selection
+            $('#view_courses').click(function() {
+                const courseType = $('#course_type').val();
+                if (courseType) {
+                    window.location.href = "{% url 'course_application' %}?course_type=" + courseType;
+                } else {
+                    alert("Please select a course type first.");
+                }
+            });
+
+            // Handle course selection and fee calculation
+            $('#course').change(function() {
+                const selected = $(this).find(':selected');
+                if (selected.val()) {
+                    const trainingFee = parseFloat(selected.data('fee'));
+                    const residentialFee = parseFloat(selected.data('residential'));
+                    const duration = selected.data('duration');
+                    const mode = selected.data('mode');
+                    
+                    $('#training_fee').text('₹ ' + trainingFee);
+                    $('#duration').text(duration + ' weeks');
+                    $('#delivery_mode').text(mode);
+                    $('#total_amount').text(trainingFee);
+                    
+                    if (residentialFee > 0) {
+                        $('#residential_fee').text(residentialFee);
+                        $('#include_residential').closest('.mt-4').removeClass('hidden');
+                    } else {
+                        $('#include_residential').closest('.mt-4').addClass('hidden');
+                    }
+                    
+                    $('#course_details').removeClass('hidden');
+                } else {
+                    $('#course_details').addClass('hidden');
+                }
+            });
+
+            // Handle residential checkbox
+            $('#include_residential').change(function() {
+                const selected = $('#course').find(':selected');
+                const trainingFee = parseFloat(selected.data('fee'));
+                const residentialFee = parseFloat(selected.data('residential'));
+                
+                if ($(this).is(':checked')) {
+                    $('#total_amount').text(trainingFee + residentialFee);
+                } else {
+                    $('#total_amount').text(trainingFee);
+                }
+            });
+
+            // Phone number validation
+            $('#phone').on('input', function() {
+                let phoneNumber = $(this).val();
+                
+                // Remove any non-digit characters
+                phoneNumber = phoneNumber.replace(/\D/g, '');
+                
+                // Ensure value is only digits
+                $(this).val(phoneNumber);
+                
+                // Validate length
+                if (phoneNumber.length === 10) {
+                    $('#phoneError').hide();
+                    $(this).removeClass('border-red-500').addClass('border-green-500');
+                } else {
+                    $('#phoneError').show();
+                    $(this).removeClass('border-green-500').addClass('border-red-500');
+                }
+            });
+        });
+        
+        // Form validation function
+        function validateForm() {
+            let phoneNumber = $('#phone').val();
+            if (phoneNumber.length !== 10) {
+                $('#phoneError').show();
+                $('#phone').focus();
+                return false;
+            }
+            
+            return true;
+        }
+    </script>
+</body>
+</html>

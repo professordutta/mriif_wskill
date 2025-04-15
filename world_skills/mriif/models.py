@@ -134,3 +134,75 @@ class EvaluatorRegistration(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.organization}"
+
+class Course(models.Model):
+    COURSE_TYPE_CHOICES = [
+        ('FDP', 'Faculty Development Program'),
+        ('RTP', 'Refresher Training Program'),
+        ('ORT', 'Online Refresher Training'),
+        ('SBP', 'Semester Blended Program'),
+        ('LTP', 'Long term Program'),
+    ]
+    
+    DELIVERY_MODE_CHOICES = [
+        ('OFFLINE', 'Offline'),
+        ('ONLINE', 'Online'),
+        ('BLENDED', 'Blended'),
+    ]
+    
+    course_type = models.CharField(max_length=20, choices=COURSE_TYPE_CHOICES)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name='courses')
+    delivery_mode = models.CharField(max_length=20, choices=DELIVERY_MODE_CHOICES)
+    duration_weeks = models.IntegerField()
+    training_fee = models.DecimalField(max_digits=10, decimal_places=2)
+    residential_fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    nsdc_share_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=15.00)
+    mrei_share_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=85.00)
+    requires_industry_cert = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+    
+    class Meta:
+        unique_together = ('course_type', 'skill')
+    
+    def __str__(self):
+        return f"{self.get_course_type_display()} - {self.skill.job_title}"
+    
+    def get_total_fee(self):
+        if self.residential_fee:
+            return self.training_fee + self.residential_fee
+        return self.training_fee
+
+class CourseApplication(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('PAYMENT_PENDING', 'Payment Pending'),
+        ('PAYMENT_COMPLETED', 'Payment Completed'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+    
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='applications')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    organization = models.CharField(max_length=200)
+    designation = models.CharField(max_length=100)
+    address = models.TextField()
+    state = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=6)
+    include_residential = models.BooleanField(default=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    order_id = models.CharField(max_length=200, blank=True, null=True)
+    cf_order_id = models.CharField(max_length=200, blank=True, null=True)
+    payment_id = models.CharField(max_length=200, blank=True, null=True)
+    payment_status = models.CharField(max_length=50, blank=True, null=True)
+    payment_date = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.course}"

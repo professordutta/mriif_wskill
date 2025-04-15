@@ -13,6 +13,7 @@ import os
 
 
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -128,3 +129,11 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+load_dotenv()
+
+CASHFREE_APP_ID = os.getenv('CASHFREE_APP_ID')
+CASHFREE_SECRET_KEY = os.getenv('CASHFREE_SECRET_KEY')
+CASHFREE_ENVIRONMENT = os.getenv('CASHFREE_ENVIRONMENT', 'SANDBOX')
+X_API_VERSION = os.getenv('X_API_VERSION', '2023-08-01')
+

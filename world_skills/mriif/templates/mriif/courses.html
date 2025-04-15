@@ -1,0 +1,376 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Programs - NSDC World Skills Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        /* Custom animations not available in standard Tailwind */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Skill item animation */
+        .skill-icon {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50 min-h-screen">
+    <!-- Include background -->
+    {% include 'mriif/background.html' %}
+    
+    <!-- Include navbar -->
+    {% include 'mriif/navbar.html' %}
+    {% include 'mriif/messages.html' %}
+
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-10 animate-fade-in">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">World Skills Academy Training Programs</h1>
+                <p class="text-gray-600 max-w-3xl mx-auto">Enhance your skills with our specialized training programs designed to prepare you for excellence in your chosen field.</p>
+            </div>
+            
+            <!-- Course Selection Panel -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8 animate-fade-in hover-lift">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-graduation-cap text-indigo-600 mr-3"></i>
+                    Find Your Course
+                </h2>
+                
+                <div class="grid md:grid-cols-5 gap-4">
+                    <div class="md:col-span-2">
+                        <label for="courseTypeSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Course Type:</label>
+                        <select class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="courseTypeSelect">
+                            <option value="">-- Select a Course Type --</option>
+                            {% for key, value in course_types.items %}
+                            <option value="{{ key }}" {% if selected_course_type == key %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label for="skillSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Skill:</label>
+                        <select class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="skillSelect" {% if not selected_course_type %}disabled{% endif %}>
+                            <option value="">-- Select a Skill --</option>
+                            {% for skill in skills %}
+                            <option value="{{ skill.id }}">{{ skill.job_title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed" id="getDetails" disabled>
+                            <i class="fas fa-info-circle mr-2"></i> Get Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Details Card (Initially Hidden) -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8 animate-fade-in hover-lift" id="courseDetailsCard" style="display: none;">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-bookmark text-yellow-500 mr-3"></i>
+                        Course Details
+                    </h2>
+                    <span class="px-4 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-semibold" id="courseTypeDisplay">
+                        <!-- Course Type will be displayed here -->
+                    </span>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h5 class="text-lg font-medium text-gray-700 mb-3">Course Information</h5>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="flex items-center py-2 border-b border-gray-200">
+                                <div class="w-40 text-gray-600">Skill:</div>
+                                <div class="font-medium text-gray-900" id="skillDisplay">-</div>
+                            </div>
+                            <div class="flex items-center py-2 border-b border-gray-200">
+                                <div class="w-40 text-gray-600">Delivery Mode:</div>
+                                <div class="font-medium text-gray-900" id="deliveryMode">-</div>
+                            </div>
+                            <div class="flex items-center py-2">
+                                <div class="w-40 text-gray-600">Duration:</div>
+                                <div class="font-medium text-gray-900" id="duration">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h5 class="text-lg font-medium text-gray-700 mb-3">Fee Structure</h5>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200">
+                                <div class="text-gray-600">Training Fee:</div>
+                                <div class="font-medium text-gray-900" id="trainingFee">₹ 0.00</div>
+                            </div>
+                            <div id="residentialFeeRow" class="border-b border-gray-200" style="display: none;">
+                                <div class="flex items-center justify-between pt-2 pb-1">
+                                    <div class="text-gray-600">Residential Fee:</div>
+                                    <div class="font-medium text-gray-900" id="residentialFee">₹ 0.00</div>
+                                </div>
+                                <div class="pb-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="includeResidential" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        <label class="ml-2 text-sm text-gray-700" for="includeResidential">
+                                            Include residential facilities
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <div class="text-gray-600 font-semibold">Total Fee:</div>
+                                <div class="text-xl font-bold text-indigo-800" id="totalFee">₹ 0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <button class="px-8 py-3 bg-yellow-400 text-indigo-900 rounded-full font-bold text-lg hover:bg-yellow-300 transition-colors duration-200 shadow-lg hover:shadow-xl" id="applyNow">
+                        <i class="fas fa-clipboard-check mr-2"></i> Apply Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Available Programs Section -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white p-4">
+                    <h2 class="text-xl font-semibold">Available Training Programs</h2>
+                </div>
+                <div class="p-4">
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse rounded-lg overflow-hidden">
+                            <thead>
+                                <tr>
+                                    <th class="bg-indigo-600 text-white font-semibold p-4 text-left">Course Type</th>
+                                    <th class="bg-indigo-600 text-white font-semibold p-4 text-left">Mode of Training</th>
+                                    <th class="bg-indigo-600 text-white font-semibold p-4 text-left">Duration (Weeks)</th>
+                                    <th class="bg-indigo-600 text-white font-semibold p-4 text-left">Training Fee</th>
+                                    <th class="bg-indigo-600 text-white font-semibold p-4 text-left">Residential Fee</th>
+                                    <th class="bg-indigo-600 text-white font-semibold p-4 text-left">Certificate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="p-4 border-b border-gray-200">Faculty Development Program</td>
+                                    <td class="p-4 border-b border-gray-200"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">Offline</span></td>
+                                    <td class="p-4 border-b border-gray-200">1</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 5,000</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 5,000 (Optional)</td>
+                                    <td class="p-4 border-b border-gray-200">Completion Certificate: NSDC & MREI</td>
+                                </tr>
+                                <tr class="bg-gray-50 hover:bg-gray-100">
+                                    <td class="p-4 border-b border-gray-200">Refresher Training Program</td>
+                                    <td class="p-4 border-b border-gray-200"><span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">Blended</span></td>
+                                    <td class="p-4 border-b border-gray-200">4</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 15,000</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 14,000 (Optional)</td>
+                                    <td class="p-4 border-b border-gray-200">Completion Certificate: NSDC & MREI<br>Industry Certificate by NSDC</td>
+                                </tr>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="p-4 border-b border-gray-200">Online Refresher Training</td>
+                                    <td class="p-4 border-b border-gray-200"><span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">Online</span></td>
+                                    <td class="p-4 border-b border-gray-200">4</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 7,500</td>
+                                    <td class="p-4 border-b border-gray-200">NA</td>
+                                    <td class="p-4 border-b border-gray-200">Completion Certificate: NSDC & MREI<br>Industry Certificate by NSDC</td>
+                                </tr>
+                                <tr class="bg-gray-50 hover:bg-gray-100">
+                                    <td class="p-4 border-b border-gray-200">Semester Blended Program</td>
+                                    <td class="p-4 border-b border-gray-200"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">Offline</span></td>
+                                    <td class="p-4 border-b border-gray-200">24</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 2,500</td>
+                                    <td class="p-4 border-b border-gray-200">NA</td>
+                                    <td class="p-4 border-b border-gray-200">Completion Certificate: NSDC & MREI</td>
+                                </tr>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="p-4 border-b border-gray-200">Long term Program</td>
+                                    <td class="p-4 border-b border-gray-200"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">Offline</span></td>
+                                    <td class="p-4 border-b border-gray-200">24</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 85,000</td>
+                                    <td class="p-4 border-b border-gray-200">₹ 60,000 (Optional)</td>
+                                    <td class="p-4 border-b border-gray-200">Completion Certificate: NSDC & MREI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    {% include 'mriif/footer.html' %}
+    
+    <script>
+        $(document).ready(function() {
+            let courseId = null;
+            let hasResidentialOption = false;
+            let trainingFee = 0;
+            let residentialFee = 0;
+            let selectedSkill = '';
+            let selectedCourseType = '';
+            
+            // Reload page when course type changes
+            $('#courseTypeSelect').change(function() {
+                const courseType = $(this).val();
+                if (courseType) {
+                    window.location.href = "{% url 'courses_list' %}?course_type=" + courseType;
+                } else {
+                    window.location.href = "{% url 'courses_list' %}";
+                }
+            });
+            
+            // Enable get details button when skill is selected
+            $('#skillSelect').change(function() {
+                const skillId = $(this).val();
+                selectedSkill = $(this).find('option:selected').text();
+                if (skillId) {
+                    $('#getDetails').prop('disabled', false);
+                    $('#getDetails').removeClass('opacity-50 cursor-not-allowed');
+                } else {
+                    $('#getDetails').prop('disabled', true);
+                    $('#getDetails').addClass('opacity-50 cursor-not-allowed');
+                }
+                $('#courseDetailsCard').hide();
+            });
+            
+            // Handle residential checkbox
+            $('#includeResidential').change(function() {
+                updateTotalFee();
+            });
+            
+            // Function to update the total fee
+            function updateTotalFee() {
+                let total = trainingFee;
+                if ($('#includeResidential').is(':checked') && hasResidentialOption) {
+                    total += residentialFee;
+                }
+                $('#totalFee').text('₹ ' + total.toLocaleString('en-IN'));
+            }
+            
+            // Get course details when button is clicked
+            $('#getDetails').click(function() {
+                const skillId = $('#skillSelect').val();
+                const courseType = $('#courseTypeSelect').val();
+                selectedCourseType = $('#courseTypeSelect option:selected').text();
+                
+                if (skillId && courseType) {
+                    // Show loading state
+                    $(this).html('<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Loading...');
+                    $(this).prop('disabled', true);
+                    $(this).addClass('opacity-50 cursor-not-allowed');
+                    
+                    $.ajax({
+                        url: "{% url 'get_course_details' %}",
+                        type: 'GET',
+                        data: {
+                            'skill_id': skillId,
+                            'course_type': courseType
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                courseId = response.id;
+                                hasResidentialOption = response.has_residential;
+                                trainingFee = response.training_fee;
+                                residentialFee = response.residential_fee;
+                                
+                                // Update course details card
+                                $('#courseTypeDisplay').text(selectedCourseType);
+                                $('#skillDisplay').text(selectedSkill);
+                                $('#deliveryMode').text(response.mode);
+                                $('#duration').text(response.duration + ' weeks');
+                                $('#trainingFee').text('₹ ' + trainingFee.toLocaleString('en-IN'));
+                                
+                                if (hasResidentialOption) {
+                                    $('#residentialFee').text('₹ ' + residentialFee.toLocaleString('en-IN'));
+                                    $('#residentialFeeRow').show();
+                                    // Reset checkbox state
+                                    $('#includeResidential').prop('checked', false);
+                                } else {
+                                    $('#residentialFeeRow').hide();
+                                }
+                                
+                                // Update total fee
+                                updateTotalFee();
+                                
+                                // Show course details card with animation
+                                $('#courseDetailsCard').fadeIn(300);
+                                
+                                // Scroll to details
+                                $('html, body').animate({
+                                    scrollTop: $("#courseDetailsCard").offset().top - 100
+                                }, 500);
+                            } else {
+                                alert('Error: ' + response.error);
+                            }
+                            
+                            // Reset button state
+                            $('#getDetails').html('<i class="fas fa-info-circle mr-2"></i> Get Details');
+                            $('#getDetails').prop('disabled', false);
+                            $('#getDetails').removeClass('opacity-50 cursor-not-allowed');
+                        },
+                        error: function() {
+                            alert('An error occurred while fetching course details.');
+                            
+                            // Reset button state
+                            $('#getDetails').html('<i class="fas fa-info-circle mr-2"></i> Get Details');
+                            $('#getDetails').prop('disabled', false);
+                            $('#getDetails').removeClass('opacity-50 cursor-not-allowed');
+                        }
+                    });
+                }
+            });
+            
+            // Apply now button click
+            $('#applyNow').click(function() {
+                if (courseId) {
+                    // Show loading state
+                    $(this).html('<svg class="animate-spin -ml-1 mr-2 h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...');
+                    $(this).prop('disabled', true);
+                    $(this).addClass('opacity-50 cursor-not-allowed');
+                    
+                    // Construct the URL with query parameters
+                    let applicationUrl = "{% url 'course_application' %}" + courseId + "/";
+                    
+                    // Add residential parameter if applicable
+                    if (hasResidentialOption && $('#includeResidential').is(':checked')) {
+                        applicationUrl += "?residential=1";
+                    }
+                    
+                    // Redirect to application page
+                    window.location.href = applicationUrl;
+                }
+            });
+            
+            // Animate skill items on hover
+            $('.skill-item').hover(function() {
+                $(this).find('.skill-icon').css('transform', 'rotate(20deg)');
+            }, function() {
+                $(this).find('.skill-icon').css('transform', 'rotate(0deg)');
+            });
+        });
+    </script>
+</body>
+</html>

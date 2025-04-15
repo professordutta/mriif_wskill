@@ -112,13 +112,24 @@
                         </svg>
                         Login
                     </a>
-
                 {% endif %}
+                
+                <!-- Apply Now Button - Moved to the right side -->
+                <a href="{% url 'courses_list' %}" class="flex items-center px-5 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 font-bold rounded-full shadow-lg hover:from-yellow-500 hover:to-yellow-600 transition duration-300 transform hover:scale-105 ml-4 border-2 border-yellow-300">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    Apply Now
+                </a>
             </div>
         </div>
 
          <!-- Dropdown Menu for Small Screens -->
          <div id="dropdown" class="hidden lg:hidden bg-gray-800">
+            <!-- Apply Now Button (Mobile) -->
+            <a href="{% url 'courses_list' %}" class="block px-4 py-3 bg-yellow-500 text-center text-gray-900 font-bold hover:bg-yellow-400">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                Apply Now
+            </a>
+            
             {% if user.is_authenticated %}
             <div class="flex items-center justify-between px-4 py-2 text-white">
                 <div class="flex items-center gap-2">

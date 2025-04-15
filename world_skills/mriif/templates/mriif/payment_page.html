@@ -1,0 +1,198 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - NSDC World Skills Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Cashfree SDK -->
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        /* Custom styles to enhance the payment page */
+        .payment-card {
+            transition: all 0.3s ease;
+        }
+        .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50 min-h-screen">
+    <!-- Include background -->
+    {% include 'mriif/background.html' %}
+    
+    <!-- Include navbar -->
+    {% include 'mriif/navbar.html' %}
+    {% include 'mriif/messages.html' %}
+
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8 animate-fade-in">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Complete Your Payment</h1>
+                <p class="text-gray-600">Secure payment processing for your course registration</p>
+            </div>
+            
+            <!-- Application Details Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6 animate-fade-in payment-card">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-user-graduate text-blue-600 mr-3"></i>
+                    Application Details
+                </h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Applicant Name</p>
+                            <p class="font-semibold">{{ application.first_name }} {{ application.last_name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Email</p>
+                            <p class="font-semibold">{{ application.email }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Phone</p>
+                            <p class="font-semibold">{{ application.phone }}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Course</p>
+                            <p class="font-semibold">{{ application.course.get_course_type_display }} - {{ application.course.skill.job_title }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Delivery Mode</p>
+                            <p class="font-semibold">{{ application.course.get_delivery_mode_display }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Duration</p>
+                            <p class="font-semibold">{{ application.course.duration_weeks }} weeks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Summary Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6 animate-fade-in payment-card" style="animation-delay: 0.2s;">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-file-invoice-dollar text-green-600 mr-3"></i>
+                    Payment Summary
+                </h2>
+                <div class="overflow-hidden">
+                    <table class="w-full">
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 text-gray-600">Training Fee:</th>
+                            <td class="text-right py-3">₹ {{ application.course.training_fee|floatformat:2 }}</td>
+                        </tr>
+                        {% if application.include_residential and application.course.residential_fee %}
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 text-gray-600">Residential Fee:</th>
+                            <td class="text-right py-3">₹ {{ application.course.residential_fee|floatformat:2 }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr class="bg-blue-50">
+                            <th class="text-left py-4 text-blue-800 font-bold">Total Amount:</th>
+                            <td class="text-right py-4 text-blue-800 font-bold text-xl">₹ {{ application.amount|floatformat:2 }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Payment Method Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 animate-fade-in payment-card" style="animation-delay: 0.4s;">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-credit-card text-indigo-600 mr-3"></i>
+                    Payment Method
+                </h2>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0 text-blue-500">
+                            <i class="fas fa-info-circle text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-800">You will be redirected to Cashfree payment gateway to complete your payment securely.</p>
+                            <p class="text-sm text-blue-700 mt-1">After payment, you will be redirected back to this site automatically.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button id="payNowButton" class="px-8 py-3 bg-yellow-400 text-indigo-900 rounded-full font-bold text-lg hover:bg-yellow-300 transition-colors duration-200 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-lock mr-2"></i> Pay Now - ₹ {{ application.amount|floatformat:2 }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'mriif/footer.html' %}
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Cashfree object
+            const cashfree = new Cashfree({
+                mode: "sandbox" // Change to "production" for live environment
+            });
+            
+            // Handle Pay Now button click
+            $('#payNowButton').click(function() {
+                // Display a loading message
+                $(this).prop('disabled', true).html('<svg class="animate-spin -ml-1 mr-2 h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...');
+                
+                // Make AJAX request to create payment session
+                $.ajax({
+                    url: "{% url 'payment_page' application.id %}",
+                    type: 'POST',
+                    data: {},
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        cashfree.checkout({
+                            paymentSessionId: data.payment_session_id,
+                            redirectTarget: "_self"
+                        });
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'An error occurred while processing your payment request.';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        }
+                        alert('Error: ' + errorMessage);
+                        $('#payNowButton').prop('disabled', false).html('<i class="fas fa-lock mr-2"></i> Pay Now - ₹ {{ application.amount|floatformat:2 }}');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

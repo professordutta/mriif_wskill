@@ -37,4 +37,13 @@ urlpatterns = [
     path('download-endorsement-template/', views.download_endorsement_template, name='download_endorsement_template'),
     path('submit-proposal/', views.submit_proposal, name='submit_proposal'),
     path('evaluator_registration/', views.evaluator_registration, name='evaluator_registration'),
+    
+    # New URL patterns for course application system
+    path('courses/', views.courses_list, name='courses_list'),
+    path('get_course_details/', views.get_course_details, name='get_course_details'),
+    path('apply/', views.course_application, name='course_application'),
+    path('apply/<int:course_id>/', views.course_application, name='course_application_with_id'),
+    path('payment/<int:application_id>/', views.payment_page, name='payment_page'),
+    path('payment/callback/', views.payment_callback, name='payment_callback'),
+    path('payment/return/', views.payment_return, name='payment_return'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
