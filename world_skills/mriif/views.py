@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
-import os, json, uuid, re
+import os
+import json
+import uuid
+import re
 from django.contrib import messages
 from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication
 from django.core.exceptions import ValidationError
@@ -16,6 +19,7 @@ from cashfree_pg.models.create_order_request import CreateOrderRequest
 from cashfree_pg.models.customer_details import CustomerDetails
 from cashfree_pg.models.order_meta import OrderMeta
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 # Configure Cashfree
 Cashfree.XClientId = settings.CASHFREE_APP_ID
@@ -190,7 +194,7 @@ def submit_proposal(request):
         except ValidationError as e:
             messages.error(request, str(e))
             return redirect('submit_proposal')
-        except Exception as e:
+        except Exception:
             messages.error(request, "Error in submission. Please ensure all fields are filled correctly.")
             return redirect('submit_proposal')
 
@@ -230,7 +234,7 @@ def evaluator_registration(request):
         except ValidationError as e:
             messages.error(request, e.message)
             return redirect('evaluator_registration')
-        except Exception as e:
+        except Exception:
             messages.error(request, "Error in submission. Please ensure all fields are filled correctly including your CV.")
             return redirect('evaluator_registration')
 
@@ -423,10 +427,13 @@ def payment_return(request):
         
         # Update application based on payment status
         if payment_status == "PAID":
+            
+            # remove the below lines in production as webhook will handle this   //important
             application.status = "PAYMENT_COMPLETED"
             application.payment_status = "SUCCESS"
             application.payment_date = timezone.now()
             application.save()
+            
             messages.success(request, "Payment successful! Your course registration has been confirmed.")
         elif payment_status == "ACTIVE":
             messages.warning(request, "Payment is still in progress. We'll update you once confirmed.")
@@ -446,6 +453,7 @@ def payment_return(request):
         return redirect('home')
 
 @csrf_exempt
+@require_POST
 def payment_callback(request):
     """
     Webhook handler for Cashfree payment status updates
@@ -482,6 +490,13 @@ def payment_callback(request):
                         application.save()
                         # Send payment failed notification to user
                         # TODO: Implement email notification
+                    
+                    elif payment_status == 'USER_DROPPED':
+                        application.status = 'CANCELLED'
+                        application.payment_status = payment_status
+                        application.save()
+                        # Optionally, send a notification to the user about the dropped payment
+                        # TODO: Implement email or SMS notification
                         
                 except CourseApplication.DoesNotExist:
                     return HttpResponse(status=404)
