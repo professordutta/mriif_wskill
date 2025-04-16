@@ -265,20 +265,61 @@
                 const selected = $(this).find(':selected');
                 if (selected.val()) {
                     const trainingFee = parseFloat(selected.data('fee'));
-                    const residentialFee = parseFloat(selected.data('residential'));
+                    const residentialFee = parseFloat(selected.data('residential') || 0);
                     const duration = selected.data('duration');
                     const mode = selected.data('mode');
                     
                     $('#training_fee').text('₹ ' + trainingFee);
                     $('#duration').text(duration + ' weeks');
                     $('#delivery_mode').text(mode);
+                    
+                    // Create the residential fee section dynamically if it doesn't exist
+                    let residentialSection = $('#course_details').find('.mt-4');
+                    
+                    // Reset total amount to training fee initially
                     $('#total_amount').text(trainingFee);
                     
                     if (residentialFee > 0) {
                         $('#residential_fee').text(residentialFee);
-                        $('#include_residential').closest('.mt-4').removeClass('hidden');
+                        
+                        // If the residential section doesn't exist, create it
+                        if (residentialSection.length === 0) {
+                            const residentialHtml = `
+                            <div class="mt-4 border-t border-gray-200 pt-4">
+                                <div class="flex items-center">
+                                    <input class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-2" type="checkbox" id="include_residential" name="include_residential">
+                                    <label class="text-sm text-gray-700" for="include_residential">
+                                        Include Residential Facilities (₹ <span id="residential_fee">${residentialFee}</span>)
+                                    </label>
+                                </div>
+                                <div class="mt-3">
+                                    <p class="text-sm text-gray-500">Total: ₹ <span id="total_amount">${trainingFee}</span></p>
+                                </div>
+                            </div>`;
+                            $('#course_details').append(residentialHtml);
+                            
+                            // Re-attach the event handler for the newly created checkbox
+                            $('#include_residential').change(function() {
+                                const selected = $('#course').find(':selected');
+                                const trainingFee = parseFloat(selected.data('fee'));
+                                const residentialFee = parseFloat(selected.data('residential') || 0);
+                                
+                                if ($(this).is(':checked')) {
+                                    $('#total_amount').text(trainingFee + residentialFee);
+                                } else {
+                                    $('#total_amount').text(trainingFee);
+                                }
+                            });
+                        } else {
+                            // If it exists, just make sure it's visible
+                            residentialSection.removeClass('hidden');
+                            $('#include_residential').prop('checked', false);
+                        }
                     } else {
-                        $('#include_residential').closest('.mt-4').addClass('hidden');
+                        // If there's no residential fee, hide the section if it exists
+                        if (residentialSection.length > 0) {
+                            residentialSection.addClass('hidden');
+                        }
                     }
                     
                     $('#course_details').removeClass('hidden');
@@ -291,7 +332,7 @@
             $('#include_residential').change(function() {
                 const selected = $('#course').find(':selected');
                 const trainingFee = parseFloat(selected.data('fee'));
-                const residentialFee = parseFloat(selected.data('residential'));
+                const residentialFee = parseFloat(selected.data('residential') || 0);
                 
                 if ($(this).is(':checked')) {
                     $('#total_amount').text(trainingFee + residentialFee);
