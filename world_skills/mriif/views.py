@@ -68,9 +68,25 @@ def contact(request):
         phone = request.POST.get('phone')
         message = request.POST.get('message')
 
-        # Validate data (basic check for empty fields)
-        if not all([first_name, last_name, email, message]):
-            messages.error(request, "All required fields must be filled.")
+        # Backend validation with specific error messages
+        errors = []
+        if not first_name or len(first_name) < 2:
+            errors.append("First name must be at least 2 characters long.")
+        if not last_name or len(last_name) < 2:
+            errors.append("Last name must be at least 2 characters long.")
+        if not email:
+            errors.append("Email is required.")
+        elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
+            errors.append("Please enter a valid email address.")
+        if not message or len(message) < 10:
+            errors.append("Message must be at least 10 characters long.")
+        if phone and not re.match(r'^[0-9]{10}$', phone):
+            errors.append("Phone number must be exactly 10 digits.")
+
+        # If there are validation errors, show them to the user
+        if errors:
+            for error in errors:
+                messages.error(request, error)
             return redirect('contact')
 
         # Save the data to the database
@@ -102,22 +118,77 @@ def skill_detail(request, skill_id):
 def spoc_registration(request):
     if request.method == 'POST':
         try:
+            # Extract form data from POST request
+            institute_name = request.POST.get('institute_name')
+            institute_code = request.POST.get('institute_code')
+            spoc_name = request.POST.get('spoc_name')
+            designation = request.POST.get('designation')
+            email = request.POST.get('email')
+            mobile = request.POST.get('mobile')
+            address = request.POST.get('address')
+            state = request.POST.get('state')
+            city = request.POST.get('city')
+            pincode = request.POST.get('pincode')
             endorsement_letter = request.FILES.get('endorsement_letter')
+            declaration = request.POST.get('declaration')
+
+            # Backend validation with specific error messages
+            errors = []
+            if not institute_name or len(institute_name) < 3:
+                errors.append("Institute name must be at least 3 characters long.")
+            if not institute_code:
+                errors.append("Institute code is required.")
+            elif not re.match(r'^[A-Z0-9-]+$', institute_code):
+                errors.append("Institute code must contain only uppercase letters, numbers and hyphens.")
+            if not address or len(address) < 10:
+                errors.append("Address must be at least 10 characters long.")
+            if not state:
+                errors.append("State is required.")
+            if not city or len(city) < 2:
+                errors.append("City must be at least 2 characters long.")
+            if not pincode:
+                errors.append("Pincode is required.")
+            elif not re.match(r'^[0-9]{6}$', pincode):
+                errors.append("Pincode must be exactly 6 digits.")
+            if not spoc_name or len(spoc_name) < 3:
+                errors.append("SPOC name must be at least 3 characters long.")
+            if not designation or len(designation) < 2:
+                errors.append("Designation must be at least 2 characters long.")
+            if not email:
+                errors.append("Email is required.")
+            elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
+                errors.append("Please enter a valid email address.")
+            if not mobile:
+                errors.append("Mobile number is required.")
+            elif not re.match(r'^[0-9]{10}$', mobile):
+                errors.append("Mobile number must be exactly 10 digits.")
+            if not endorsement_letter:
+                errors.append("Endorsement letter is required.")
+            if not declaration:
+                errors.append("You must agree to the declaration.")
+
+            # If there are validation errors, show them to the user
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+                return redirect('spoc_registration')
+
+            # Validate file
             if endorsement_letter:
                 validate_file_size(endorsement_letter)
                 validate_file_extension(endorsement_letter)
                 
             spoc = SPOCRegistration(
-                institute_name=request.POST.get('institute_name'),
-                institute_code=request.POST.get('institute_code'),
-                spoc_name=request.POST.get('spoc_name'),
-                designation=request.POST.get('designation'),
-                email=request.POST.get('email'),
-                mobile=request.POST.get('mobile'),
-                address=request.POST.get('address'),
-                state=request.POST.get('state'),
-                city=request.POST.get('city'),
-                pincode=request.POST.get('pincode'),
+                institute_name=institute_name,
+                institute_code=institute_code,
+                spoc_name=spoc_name,
+                designation=designation,
+                email=email,
+                mobile=mobile,
+                address=address,
+                state=state,
+                city=city,
+                pincode=pincode,
                 endorsement_letter=endorsement_letter
             )
             spoc.save()
@@ -126,8 +197,8 @@ def spoc_registration(request):
         except ValidationError as e:
             messages.error(request, e.message)
             return redirect('spoc_registration')
-        except Exception:  
-            messages.error(request, "Error in registration. Please ensure all fields are filled correctly including the endorsement letter.")
+        except Exception as e:  
+            messages.error(request, f"Error in registration: {str(e)}. Please ensure all fields are filled correctly.")
             return redirect('spoc_registration')
 
     return render(request, 'mriif/spoc-registration.html')
@@ -149,8 +220,76 @@ def hackathon(request):
 def submit_proposal(request):
     if request.method == 'POST':
         try:
-            # Check proposal count before processing file
+            # Extract form data
+            proposal_title = request.POST.get('proposal_title')
             category = request.POST.get('category')
+            institute_name = request.POST.get('institute_name')
+            institute_address = request.POST.get('institute_address')
+            contact_number = request.POST.get('contact_number')
+            team_name = request.POST.get('team_name')
+            student1_name = request.POST.get('student1_name')
+            student1_email = request.POST.get('student1_email')
+            student2_name = request.POST.get('student2_name')
+            student2_email = request.POST.get('student2_email')
+            student3_name = request.POST.get('student3_name')
+            student3_email = request.POST.get('student3_email')
+            student4_name = request.POST.get('student4_name')
+            student4_email = request.POST.get('student4_email')
+            faculty_name = request.POST.get('faculty_name')
+            faculty_email = request.POST.get('faculty_email')
+            proposal_file = request.FILES.get('proposal_file')
+            declaration = request.POST.get('declaration')
+            
+            # Backend validation with specific error messages
+            errors = []
+            if not proposal_title or len(proposal_title) < 3:
+                errors.append("Proposal title must be at least 3 characters long.")
+            if not category:
+                errors.append("Category is required.")
+            if not institute_name or len(institute_name) < 3:
+                errors.append("Institute name must be at least 3 characters long.")
+            if not institute_address or len(institute_address) < 10:
+                errors.append("Institute address must be at least 10 characters long.")
+            if not contact_number:
+                errors.append("Contact number is required.")
+            elif not re.match(r'^[0-9]{10}$', contact_number):
+                errors.append("Contact number must be exactly 10 digits.")
+            if not team_name:
+                errors.append("Team name is required.")
+                
+            # Validate student information
+            for i in range(1, 5):
+                student_name = locals()[f'student{i}_name']
+                student_email = locals()[f'student{i}_email']
+                
+                if not student_name or len(student_name) < 3:
+                    errors.append(f"Student {i} name must be at least 3 characters long.")
+                if not student_email:
+                    errors.append(f"Student {i} email is required.")
+                elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', student_email):
+                    errors.append(f"Please enter a valid email address for student {i}.")
+            
+            # Validate faculty information
+            if not faculty_name:
+                errors.append("Faculty name is required.")
+            if not faculty_email:
+                errors.append("Faculty email is required.")
+            elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', faculty_email):
+                errors.append("Please enter a valid email address for faculty.")
+                
+            # Validate proposal file and declaration
+            if not proposal_file:
+                errors.append("Proposal file is required.")
+            if not declaration:
+                errors.append("You must agree to the declaration.")
+                
+            # If there are validation errors, show them to the user
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+                return redirect('submit_proposal')
+
+            # Check proposal count before processing file
             user_proposals_count = Proposal.objects.filter(
                 user=request.user,
                 category=category
@@ -163,30 +302,29 @@ def submit_proposal(request):
                 )
                 return redirect('submit_proposal')
 
-            proposal_file = request.FILES.get('proposal_file')
             if proposal_file:
                 validate_file_size(proposal_file)
                 validate_file_extension(proposal_file)
             
             proposal = Proposal(
                 user=request.user, 
-                proposal_title=request.POST.get('proposal_title'),
-                institute_name=request.POST.get('institute_name'),
-                institute_address=request.POST.get('institute_address'),
-                contact_number=request.POST.get('contact_number'),
+                proposal_title=proposal_title,
+                institute_name=institute_name,
+                institute_address=institute_address,
+                contact_number=contact_number,
                 proposal_file=proposal_file,
-                category=request.POST.get('category'),
-                team_name=request.POST.get('team_name'),
-                student1_name=request.POST.get('student1_name'),
-                student1_email=request.POST.get('student1_email'),
-                student2_name=request.POST.get('student2_name'),
-                student2_email=request.POST.get('student2_email'),
-                student3_name=request.POST.get('student3_name'),
-                student3_email=request.POST.get('student3_email'),
-                student4_name=request.POST.get('student4_name'),
-                student4_email=request.POST.get('student4_email'),
-                faculty_name=request.POST.get('faculty_name'),
-                faculty_email=request.POST.get('faculty_email')
+                category=category,
+                team_name=team_name,
+                student1_name=student1_name,
+                student1_email=student1_email,
+                student2_name=student2_name,
+                student2_email=student2_email,
+                student3_name=student3_name,
+                student3_email=student3_email,
+                student4_name=student4_name,
+                student4_email=student4_email,
+                faculty_name=faculty_name,
+                faculty_email=faculty_email
             )
             proposal.save()
             messages.success(request, "Proposal submitted successfully!")
@@ -194,8 +332,8 @@ def submit_proposal(request):
         except ValidationError as e:
             messages.error(request, str(e))
             return redirect('submit_proposal')
-        except Exception:
-            messages.error(request, "Error in submission. Please ensure all fields are filled correctly.")
+        except Exception as e:
+            messages.error(request, f"Error in submission: {str(e)}. Please ensure all fields are filled correctly.")
             return redirect('submit_proposal')
 
     # Add context data to show remaining submissions
@@ -212,30 +350,85 @@ def submit_proposal(request):
 def evaluator_registration(request):
     if request.method == 'POST':
         try:
+            # Extract form data
+            full_name = request.POST.get('full_name')
+            email = request.POST.get('email')
+            mobile = request.POST.get('mobile')
+            linkedin_url = request.POST.get('linkedin_url')
+            organization = request.POST.get('organization')
+            designation = request.POST.get('designation')
+            experience = request.POST.get('experience')
+            expertise = request.POST.getlist('expertise')  # Use getlist() for multiple select
             cv_file = request.FILES.get('cv_file')
+            declaration = request.POST.get('declaration')
+            
+            # Backend validation with specific error messages
+            errors = []
+            if not full_name or len(full_name) < 3:
+                errors.append("Full name must be at least 3 characters long.")
+            if not email:
+                errors.append("Email is required.")
+            elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
+                errors.append("Please enter a valid email address.")
+            if not mobile:
+                errors.append("Mobile number is required.")
+            elif not re.match(r'^[0-9]{10}$', mobile):
+                errors.append("Mobile number must be exactly 10 digits.")
+            if not organization or len(organization) < 2:
+                errors.append("Organization name must be at least 2 characters long.")
+            if not designation or len(designation) < 2:
+                errors.append("Designation must be at least 2 characters long.")
+            
+            # Validate experience - must be numeric and within range
+            if not experience:
+                errors.append("Years of experience is required.")
+            else:
+                try:
+                    exp_value = int(experience)
+                    if exp_value < 0:
+                        errors.append("Experience cannot be negative.")
+                    elif exp_value > 50:
+                        errors.append("Experience cannot exceed 50 years.")
+                except ValueError:
+                    errors.append("Experience must be a valid number.")
+                    
+            if not expertise:
+                errors.append("Please select at least one area of expertise.")
+            if not cv_file:
+                errors.append("CV file is required.")
+            if not declaration:
+                errors.append("You must agree to the declaration.")
+                
+            # If there are validation errors, show them to the user
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+                return redirect('evaluator_registration')
+            
+            # Validate file
             if cv_file:
                 validate_file_size(cv_file)
                 validate_file_extension(cv_file)
                 
             evaluator = EvaluatorRegistration(
-                full_name=request.POST.get('full_name'),
-                email=request.POST.get('email'),
-                mobile=request.POST.get('mobile'),
-                linkedin_url=request.POST.get('linkedin_url'),
-                organization=request.POST.get('organization'),
-                designation=request.POST.get('designation'),
-                experience=request.POST.get('experience'),
-                expertise=request.POST.getlist('expertise'),  # Use getlist() for multiple select
+                full_name=full_name,
+                email=email,
+                mobile=mobile,
+                linkedin_url=linkedin_url,
+                organization=organization,
+                designation=designation,
+                experience=int(experience),
+                expertise=expertise,
                 cv_file=cv_file
             )
             evaluator.save()
             messages.success(request, "Thank you for your interest! Your application has been submitted successfully.")
             return redirect('evaluator_registration')
         except ValidationError as e:
-            messages.error(request, e.message)
+            messages.error(request, str(e))
             return redirect('evaluator_registration')
-        except Exception:
-            messages.error(request, "Error in submission. Please ensure all fields are filled correctly including your CV.")
+        except Exception as e:
+            messages.error(request, f"Error in submission: {str(e)}. Please ensure all fields are filled correctly including your CV.")
             return redirect('evaluator_registration')
 
     # Add categories to context
