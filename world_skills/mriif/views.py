@@ -14,6 +14,7 @@ from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.urls import reverse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from cashfree_pg.api_client import Cashfree
 from cashfree_pg.models.create_order_request import CreateOrderRequest
 from cashfree_pg.models.customer_details import CustomerDetails
@@ -700,3 +701,109 @@ def payment_callback(request):
             return JsonResponse({'error': str(e)}, status=400)
             
     return JsonResponse({'error': 'Invalid method'}, status=405)
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_staff or u.groups.filter(name='staff').exists() or u.is_superuser)
+def staff_dashboard(request):
+    """
+    Dashboard for staff members to view contact submissions and applications
+    """
+    # Get data for the dashboard based on filters
+    tab = request.GET.get('tab', 'overview')
+    search_query = request.GET.get('search', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    # Get contact submissions with filters
+    contacts_query = ContactUs.objects.all().order_by('-id')
+    
+    if search_query:
+        contacts_query = contacts_query.filter(
+            Q(first_name__icontains=search_query) | 
+            Q(last_name__icontains=search_query) | 
+            Q(email__icontains=search_query)
+        )
+    
+    if date_from:
+        try:
+            date_from_obj = timezone.datetime.strptime(date_from, '%Y-%m-%d').date()
+            contacts_query = contacts_query.filter(created_at__date__gte=date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = timezone.datetime.strptime(date_to, '%Y-%m-%d').date()
+            contacts_query = contacts_query.filter(created_at__date__lte=date_to_obj)
+        except ValueError:
+            pass
+    
+    # Get application submissions with filters
+    applications_query = CourseApplication.objects.all().order_by('-id')
+    
+    if search_query:
+        applications_query = applications_query.filter(
+            Q(first_name__icontains=search_query) | 
+            Q(last_name__icontains=search_query) | 
+            Q(email__icontains=search_query)
+        )
+    
+    if date_from:
+        try:
+            date_from_obj = timezone.datetime.strptime(date_from, '%Y-%m-%d').date()
+            applications_query = applications_query.filter(created_at__date__gte=date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = timezone.datetime.strptime(date_to, '%Y-%m-%d').date()
+            applications_query = applications_query.filter(created_at__date__lte=date_to_obj)
+        except ValueError:
+            pass
+    
+    # Pagination for contacts
+    page = request.GET.get('page', 1)
+    contacts_paginator = Paginator(contacts_query, 10)  # Show 10 contacts per page
+    
+    try:
+        contacts_page = contacts_paginator.page(page)
+    except PageNotAnInteger:
+        contacts_page = contacts_paginator.page(1)
+    except EmptyPage:
+        contacts_page = contacts_paginator.page(contacts_paginator.num_pages)
+    
+    # Pagination for applications
+    applications_paginator = Paginator(applications_query, 10)  # Show 10 applications per page
+    
+    try:
+        applications_page = applications_paginator.page(page)
+    except PageNotAnInteger:
+        applications_page = applications_paginator.page(1)
+    except EmptyPage:
+        applications_page = applications_paginator.page(applications_paginator.num_pages)
+    
+    # Dashboard statistics
+    stats = {
+        'total_contacts': ContactUs.objects.count(),
+        'total_applications': CourseApplication.objects.count(),
+        'pending_payments': CourseApplication.objects.filter(status='PAYMENT_PENDING').count(),
+        'completed_payments': CourseApplication.objects.filter(status='PAYMENT_COMPLETED').count(),
+    }
+    
+    # Prepare context for the template
+    context = {
+        'contacts': contacts_query,
+        'contacts_page': contacts_page,
+        'applications': applications_query,
+        'applications_page': applications_page,
+        'all_contacts': contacts_query,  # For PDF export
+        'all_applications': applications_query,  # For PDF export
+        'stats': stats,
+        'tab': tab,
+        'search_query': search_query,
+        'date_from': date_from,
+        'date_to': date_to,
+    }
+    
+    return render(request, 'mriif/staff_dashboard.html', context)

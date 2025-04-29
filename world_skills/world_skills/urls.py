@@ -38,6 +38,9 @@ urlpatterns = [
     path('submit-proposal/', views.submit_proposal, name='submit_proposal'),
     path('evaluator_registration/', views.evaluator_registration, name='evaluator_registration'),
     
+    # Staff Dashboard
+    path('dashboard/', views.staff_dashboard, name='staff_dashboard'),
+    
     # New URL patterns for course application system
     path('courses/', views.courses_list, name='courses_list'),
     path('get_course_details/', views.get_course_details, name='get_course_details'),

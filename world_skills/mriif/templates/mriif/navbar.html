@@ -109,6 +109,14 @@
                                         Admin
                                     </span>
                                 {% endif %}
+                                {% if user.is_staff and not user.is_superuser %}
+                                    <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                        </svg>
+                                        Staff
+                                    </span>
+                                {% endif %}
                                 {% if user.groups.all.0.name == 'spocs' %}
                                     <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -119,6 +127,16 @@
                                 {% endif %}
                             </div>
                         </div>
+                        {% if user.is_staff or user.is_superuser %}
+                            <a href="{% url 'staff_dashboard' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md {% if request.resolver_match.url_name == 'staff_dashboard' %} text-yellow-400 {% endif %}">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                                    </svg>
+                                    Dashboard
+                                </div>
+                            </a>
+                        {% endif %}
                         {% if user.groups.all.0.name == 'spocs' %}
                             <a href="{% url 'submit_proposal' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md">
                                 <div class="flex items-center">
@@ -138,7 +156,7 @@
                                 Submit Proposals
                             </div>
                         </a>
-                    {% endif %}
+                        {% endif %}
                         <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-red-400 hover:bg-gray-600 transition duration-300 transform hover:scale-105 rounded-md">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
@@ -147,7 +165,6 @@
                         </a>
                     </div>
                 </div>
-                
                 {% endif %}
                 
                 <!-- Apply Now Button - Moved to the right side -->
@@ -182,6 +199,14 @@
                             Admin
                         </span>
                     {% endif %}
+                    {% if user.is_staff and not user.is_superuser %}
+                        <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                            Staff
+                        </span>
+                    {% endif %}
                     {% if user.groups.all.0.name == 'spocs' %}
                         <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -192,6 +217,16 @@
                     {% endif %}
                 </div>
             </div>
+            {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'staff_dashboard' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 border-t border-gray-600 {% if request.resolver_match.url_name == 'staff_dashboard' %} text-yellow-400 {% endif %}">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                        </svg>
+                        Dashboard
+                    </div>
+                </a>
+            {% endif %}
             {% if user.groups.all.0.name == 'spocs' %}
                 <a href="{% url 'submit_proposal' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 border-t border-gray-600">
                     <div class="flex items-center">
@@ -211,7 +246,7 @@
                     Submit Proposals
                 </div>
             </a>
-        {% endif %}
+            {% endif %}
             <a href="{% url 'logout' %}" class="block px-4 py-2 text-red-400 hover:bg-gray-600 border-t border-gray-600">
                 <div class="flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
