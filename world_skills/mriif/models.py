@@ -206,3 +206,18 @@ class CourseApplication(models.Model):
     
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.course}"
+
+class Enquiry(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    mobile = models.CharField(max_length=15)
+    course = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} - {self.course} - {self.created_at.strftime('%Y-%m-%d')}"
+    
+    class Meta:
+        verbose_name_plural = "Enquiries"
+        ordering = ['-created_at']

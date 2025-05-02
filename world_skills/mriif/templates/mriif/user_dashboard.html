@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - NSDC World Skills Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(254, 215, 70, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(254, 215, 70, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(254, 215, 70, 0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50">
+    <!-- Include background -->
+    {% include 'mriif/background.html' %}
+    
+    <!-- Include navbar and messages -->
+    {% include 'mriif/navbar.html' %}
+    {% include 'mriif/messages.html' %}
+
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8 animate-fade-in">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">My Dashboard</h1>
+                <p class="text-gray-600">View and manage your course applications</p>
+            </div>
+            
+            <!-- User profile summary -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8 animate-fade-in card-hover">
+                <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-8">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center text-white text-3xl font-bold">
+                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-semibold">{{ user.first_name }} {{ user.last_name }}</h2>
+                        <p class="text-gray-600">{{ user.email }}</p>
+                        <div class="mt-4 flex flex-wrap gap-3">
+                            <a href="{% url 'courses_list' %}" class="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 rounded-md transition-colors duration-200">
+                                <i class="fas fa-search mr-2"></i> Browse Courses
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Applications section -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white p-4">
+                    <h2 class="text-xl font-semibold">My Applications</h2>
+                </div>
+                
+                {% if applications %}
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 text-left border-b">Course</th>
+                                <th class="p-3 text-left border-b">Type</th>
+                                <th class="p-3 text-left border-b">Amount</th>
+                                <th class="p-3 text-left border-b">Status</th>
+                                <th class="p-3 text-left border-b">Date</th>
+                                <th class="p-3 text-left border-b">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                            <tr class="hover:bg-gray-50 {% if application.status == 'PAYMENT_PENDING' %}bg-yellow-50{% endif %}">
+                                <td class="p-3 border-b">{{ application.course.skill.job_title }}</td>
+                                <td class="p-3 border-b">{{ application.course.get_course_type_display }}</td>
+                                <td class="p-3 border-b">₹ {{ application.amount }}</td>
+                                <td class="p-3 border-b">
+                                    {% if application.status == 'PAYMENT_COMPLETED' %}
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                                            <i class="fas fa-check-circle mr-1"></i> 
+                                            Payment Completed
+                                        </span>
+                                    {% elif application.status == 'PAYMENT_PENDING' %}
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium pulse">
+                                            <i class="fas fa-clock mr-1"></i> 
+                                            Payment Pending
+                                        </span>
+                                    {% elif application.status == 'CONFIRMED' %}
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+                                            <i class="fas fa-certificate mr-1"></i> 
+                                            Confirmed
+                                        </span>
+                                    {% elif application.status == 'CANCELLED' %}
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">
+                                            <i class="fas fa-times-circle mr-1"></i> 
+                                            Cancelled
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-medium">
+                                            {{ application.status }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-3 border-b">
+                                    <span title="{{ application.created_at }}">
+                                        {{ application.created_at|date:"M d, Y" }}
+                                    </span>
+                                </td>
+                                <td class="p-3 border-b">
+                                    {% if application.status == 'PAYMENT_PENDING' %}
+                                        <a href="{% url 'resume_application' application.id %}" 
+                                           class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm">
+                                            Complete Payment
+                                        </a>
+                                    {% elif application.status == 'PAYMENT_COMPLETED' %}
+                                        <span class="px-3 py-1 text-sm text-green-600">
+                                            <i class="fas fa-check-circle mr-1"></i> Paid
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-8 text-center">
+                    <i class="fas fa-info-circle text-blue-500 text-4xl mb-4"></i>
+                    <p class="text-gray-600">You haven't applied for any courses yet.</p>
+                    <a href="{% url 'courses_list' %}" class="inline-flex items-center px-4 py-2 mt-4 bg-yellow-500 hover:bg-yellow-600 text-gray-900 rounded-md transition-colors duration-200">
+                        <i class="fas fa-search mr-2"></i> Browse Courses
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Include footer -->
+    {% include 'mriif/footer.html' %}
+
+    <script>
+        $(document).ready(function() {
+            // Add any JavaScript functionality here
+        });
+    </script>
+</body>
+</html>

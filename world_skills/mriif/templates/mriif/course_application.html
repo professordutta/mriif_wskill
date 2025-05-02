@@ -171,6 +171,20 @@
                     <div>
                         <h3 class="section-heading text-xl text-gray-800">Personal Information</h3>
                         
+                        <div class="mb-6 p-4 bg-green-50 rounded-lg">
+                            <div class="flex items-center justify-between flex-wrap">
+                                <div>
+                                    <h4 class="font-semibold text-green-800">Logged in as {{ request.user.get_full_name|default:request.user.username }}</h4>
+                                    <p class="text-sm text-green-700 mt-1">Your application will be linked to your account</p>
+                                </div>
+                                <div class="mt-2 md:mt-0">
+                                    <a href="{% url 'user_dashboard' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="grid md:grid-cols-2 gap-6">
                             <div>
                                 <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name:</label>
@@ -183,6 +197,7 @@
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email:</label>
                                 <input type="email" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="email" name="email" required>
+                                <div id="emailError" class="text-red-500 text-sm mt-1" style="display: none;">You already have an application for this course with this email address</div>
                             </div>
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone (10 digits):</label>
@@ -250,6 +265,11 @@
 
     <script>
         $(document).ready(function() {
+            // Populate user information if logged in
+            $('#first_name').val('{{ user.first_name }}');
+            $('#last_name').val('{{ user.last_name }}');
+            $('#email').val('{{ user.email }}');
+            
             // Handle course type selection
             $('#view_courses').click(function() {
                 const courseType = $('#course_type').val();
@@ -259,6 +279,36 @@
                     alert("Please select a course type first.");
                 }
             });
+
+            // Function to check for duplicate applications
+            function checkDuplicateApplication(courseId) {
+                if (!courseId) return;
+                
+                $.ajax({
+                    url: "{% url 'check_duplicate_application' %}",
+                    type: 'GET',
+                    data: {
+                        'email': $('#email').val(),
+                        'phone': $('#phone').val(),
+                        'course_id': courseId
+                    },
+                    success: function(response) {
+                        if (response.duplicate) {
+                            $('#emailError').text(response.message).show();
+                            $('#email').addClass('border-red-500');
+                            // Disable submit button
+                            $('button[type="submit"]').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+                        } else {
+                            $('#emailError').hide();
+                            $('#email').removeClass('border-red-500');
+                            // Only enable if phone is valid too
+                            if ($('#phone').val().length === 10) {
+                                $('button[type="submit"]').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                            }
+                        }
+                    }
+                });
+            }
 
             // Handle course selection and fee calculation
             $('#course').change(function() {
@@ -323,6 +373,9 @@
                     }
                     
                     $('#course_details').removeClass('hidden');
+                    
+                    // Check for duplicate application when course changes
+                    checkDuplicateApplication(selected.val());
                 } else {
                     $('#course_details').addClass('hidden');
                 }
@@ -355,11 +408,24 @@
                 if (phoneNumber.length === 10) {
                     $('#phoneError').hide();
                     $(this).removeClass('border-red-500').addClass('border-green-500');
+                    
+                    // Recheck for duplicate applications with new phone number
+                    const selectedCourse = $('#course').find(':selected');
+                    if (selectedCourse.val()) {
+                        checkDuplicateApplication(selectedCourse.val());
+                    }
                 } else {
                     $('#phoneError').show();
                     $(this).removeClass('border-green-500').addClass('border-red-500');
+                    // Disable submit button if phone number is invalid
+                    $('button[type="submit"]').prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
                 }
             });
+            
+            // If the course is already selected on page load (e.g. when returning to the page), check for duplicates
+            if ($('#course').val()) {
+                checkDuplicateApplication($('#course').val());
+            }
         });
         
         // Form validation function
@@ -368,6 +434,12 @@
             if (phoneNumber.length !== 10) {
                 $('#phoneError').show();
                 $('#phone').focus();
+                return false;
+            }
+            
+            // Check for duplicate application
+            if ($('#emailError').is(':visible')) {
+                alert("You already have an application for this course. Please check your email or user dashboard.");
                 return false;
             }
             

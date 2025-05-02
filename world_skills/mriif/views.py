@@ -5,11 +5,12 @@ import json
 import uuid
 import re
 from django.contrib import messages
-from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication
+from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication, Enquiry
 from django.core.exceptions import ValidationError
 from .validators import validate_file_size, validate_file_extension
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
@@ -53,6 +54,60 @@ def login_view(request):
 
     return render(request, 'mriif/login.html')
 
+def signup(request):
+    # Redirect logged-in users to the home page
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        password_confirm = request.POST.get('password_confirm')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+
+        # Basic form validation
+        errors = []
+        if not username or len(username) < 3:
+            errors.append("Username must be at least 3 characters long.")
+        if User.objects.filter(username=username).exists():
+            errors.append("Username already exists. Please choose another one.")
+        if not email:
+            errors.append("Email is required.")
+        elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
+            errors.append("Please enter a valid email address.")
+        if User.objects.filter(email=email).exists():
+            errors.append("Email is already registered. Please use another one.")
+        if not password or len(password) < 8:
+            errors.append("Password must be at least 8 characters long.")
+        if password != password_confirm:
+            errors.append("Passwords do not match.")
+        
+        # If there are validation errors, show them to the user
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect('signup')
+
+        # Create new user account
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            # Log the user in immediately after registration
+            login(request, user)
+            messages.success(request, "Account created successfully! Welcome to MRIIF.")
+            return redirect('home')
+        except Exception as e:
+            messages.error(request, f"Error creating account: {str(e)}")
+            return redirect('signup')
+
+    return render(request, 'mriif/signup.html')
 
 @login_required
 def logoutuser(request):
@@ -482,6 +537,7 @@ def get_course_details(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid method'})
 
+@login_required(login_url='login')
 def course_application(request, course_id=None):
     # If course_id is provided, pre-select that course
     selected_course = None
@@ -507,6 +563,15 @@ def course_application(request, course_id=None):
             course_id = request.POST.get('course')
             course = Course.objects.get(id=course_id)
             
+            # Check if user already has a pending application for this course
+            if CourseApplication.objects.filter(
+                user=request.user, 
+                course=course,
+                status__in=['PENDING', 'PAYMENT_PENDING', 'PAYMENT_COMPLETED', 'CONFIRMED']
+            ).exists():
+                messages.error(request, "You already have an active application for this course.")
+                return redirect('course_application_with_id', course_id=course_id)
+            
             # Check if include_residential checkbox is checked
             include_residential = request.POST.get('include_residential') == 'on'
             
@@ -518,7 +583,7 @@ def course_application(request, course_id=None):
             # Create application
             application = CourseApplication(
                 course=course,
-                user=request.user if request.user.is_authenticated else None,
+                user=request.user,
                 first_name=request.POST.get('first_name'),
                 last_name=request.POST.get('last_name'),
                 email=request.POST.get('email'),
@@ -807,3 +872,137 @@ def staff_dashboard(request):
     }
     
     return render(request, 'mriif/staff_dashboard.html', context)
+
+def submit_enquiry(request):
+    """Handle quick enquiry form submissions from the home page"""
+    if request.method == 'POST':
+        try:
+            # Extract form data
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            mobile = request.POST.get('mobile')
+            course = request.POST.get('course')
+            city = request.POST.get('city')
+            
+            # Basic validation
+            errors = []
+            if not name or len(name) < 2:
+                errors.append("Name must be at least 2 characters long.")
+            if not email:
+                errors.append("Email is required.")
+            elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
+                errors.append("Please enter a valid email address.")
+            if not mobile:
+                errors.append("Mobile number is required.")
+            elif not re.match(r'^[0-9]{10}$', mobile):
+                errors.append("Mobile number must be exactly 10 digits.")
+            if not course:
+                errors.append("Please select a course of interest.")
+            if not city:
+                errors.append("City is required.")
+                
+            # If there are validation errors, show them to the user
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+                return redirect('home')
+            
+            # Save the enquiry to the database
+            enquiry = Enquiry(
+                name=name,
+                email=email,
+                mobile=mobile,
+                course=course,
+                city=city
+            )
+            enquiry.save()
+            
+            messages.success(request, "Thank you for your enquiry! Our team will get back to you shortly.")
+            return redirect('home')
+            
+        except Exception as e:
+            messages.error(request, f"Error submitting enquiry: {str(e)}")
+            return redirect('home')
+            
+    return redirect('home')
+
+def check_user_exists(request):
+    """Check if a username or email already exists in the system"""
+    if request.method == 'GET':
+        username = request.GET.get('username')
+        email = request.GET.get('email')
+        
+        response = {'username_exists': False, 'email_exists': False}
+        
+        if username:
+            response['username_exists'] = User.objects.filter(username=username).exists()
+        
+        if email:
+            response['email_exists'] = User.objects.filter(email=email).exists()
+            
+        return JsonResponse(response)
+    
+    return JsonResponse({'error': 'Invalid method'}, status=400)
+
+@login_required(login_url='login')
+def user_dashboard(request):
+    """
+    Dashboard for users to view their applications and resume payment if needed
+    """
+    # Get all applications for the current user
+    applications = CourseApplication.objects.filter(user=request.user).order_by('-id')
+    
+    # Dashboard statistics
+    stats = {
+        'total_applications': applications.count(),
+        'pending_payments': applications.filter(status='PAYMENT_PENDING').count(),
+        'completed_payments': applications.filter(status='PAYMENT_COMPLETED').count(),
+        'confirmed': applications.filter(status='CONFIRMED').count(),
+    }
+    
+    # Prepare context for the template
+    context = {
+        'applications': applications,
+        'stats': stats,
+    }
+    
+    return render(request, 'mriif/user_dashboard.html', context)
+
+@login_required(login_url='login')
+def resume_application(request, application_id):
+    """
+    Resume a pending application and redirect to payment page
+    """
+    application = get_object_or_404(CourseApplication, id=application_id, user=request.user)
+    
+    # Only allow resuming applications with payment pending
+    if application.status != 'PAYMENT_PENDING':
+        messages.error(request, "This application cannot be resumed as its status is not pending payment.")
+        return redirect('user_dashboard')
+    
+    return redirect('payment_page', application_id=application.id)
+
+def check_duplicate_application(request):
+    """
+    AJAX endpoint to check if a user has already applied for a specific course
+    """
+    if request.method == 'GET':
+        course_id = request.GET.get('course_id')
+        
+        if course_id and request.user.is_authenticated:
+            # Check if the current user already has an application for this course
+            existing_application = CourseApplication.objects.filter(
+                user=request.user,
+                course_id=course_id,
+                status__in=['PENDING', 'PAYMENT_PENDING', 'PAYMENT_COMPLETED', 'CONFIRMED']
+            ).first()
+            
+            if existing_application:
+                return JsonResponse({
+                    'duplicate': True,
+                    'message': f"You already have an active application for this course (Status: {existing_application.get_status_display()})"
+                })
+        
+        return JsonResponse({'duplicate': False})
+    
+    return JsonResponse({'error': 'Invalid request method'})

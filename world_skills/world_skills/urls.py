@@ -27,6 +27,7 @@ urlpatterns = [
     # your other url patterns
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name='login'),
+    path('signup/', views.signup, name='signup'),
     path('logout/', views.logoutuser, name='logout'),
     path('', views.home, name='home'),
     path('contact', views.contact, name='contact'),
@@ -37,6 +38,7 @@ urlpatterns = [
     path('download-endorsement-template/', views.download_endorsement_template, name='download_endorsement_template'),
     path('submit-proposal/', views.submit_proposal, name='submit_proposal'),
     path('evaluator_registration/', views.evaluator_registration, name='evaluator_registration'),
+    path('submit-enquiry/', views.submit_enquiry, name='submit_enquiry'),
     
     # Staff Dashboard
     path('dashboard/', views.staff_dashboard, name='staff_dashboard'),
@@ -49,4 +51,10 @@ urlpatterns = [
     path('payment/<int:application_id>/', views.payment_page, name='payment_page'),
     path('payment/callback/', views.payment_callback, name='payment_callback'),
     path('payment/return/', views.payment_return, name='payment_return'),
+    
+    # User account integration routes
+    path('my-dashboard/', views.user_dashboard, name='user_dashboard'),
+    path('resume-application/<int:application_id>/', views.resume_application, name='resume_application'),
+    path('check-duplicate-application/', views.check_duplicate_application, name='check_duplicate_application'),
+    path('check-user-exists/', views.check_user_exists, name='check_user_exists'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

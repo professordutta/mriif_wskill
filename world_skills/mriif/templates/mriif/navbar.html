@@ -69,16 +69,6 @@
                                 Evaluator Registration
                             </div>
                         </a>
-                        {% if not user.is_authenticated %}
-                        <a href="{% url 'login' %}" class="block px-4 py-2 text-green-400 hover:bg-gray-600 rounded-b-md {% if request.resolver_match.url_name == 'login' %} text-yellow-400 {% endif %}">
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2V7c0-1.104-.896-2-2-2m0 0C10.896 5 10 5.896 10 7v2c0 1.104.896 2 2 2zm0 4v6m0 0H8m4 0h4m-4-6v6" />
-                                </svg>
-                                SPOC Login
-                            </div>
-                        </a>
-                        {% endif %}
                     </div>
                 </div>
                 
@@ -98,7 +88,7 @@
                     </button>
                     <div id="avatar-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg z-50">
                         <div class="px-4 py-2 text-white font-semibold text-sm">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 <span class="text-gray-400">Hello,</span> 
                                 <span class="text-indigo-400">{{ user.username }}</span>
                                 {% if user.is_superuser %}
@@ -125,6 +115,14 @@
                                         SPOC
                                     </span>
                                 {% endif %}
+                                {% if not user.is_staff and not user.is_superuser and not user.groups.all %}
+                                    <span class="bg-purple-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                        </svg>
+                                        Student
+                                    </span>
+                                {% endif %}
                             </div>
                         </div>
                         {% if user.is_staff or user.is_superuser %}
@@ -133,7 +131,24 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                                     </svg>
-                                    Dashboard
+                                    Staff Dashboard
+                                </div>
+                            </a>
+                            <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md {% if request.resolver_match.url_name == 'user_dashboard' %} text-yellow-400 {% endif %}">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Course Applications
+                                </div>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 rounded-md {% if request.resolver_match.url_name == 'user_dashboard' %} text-yellow-400 {% endif %}">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    My Dashboard
                                 </div>
                             </a>
                         {% endif %}
@@ -164,6 +179,22 @@
                             Logout
                         </a>
                     </div>
+                </div>
+                {% else %}
+                <!-- Login/Signup Buttons for Non-Authenticated Users -->
+                <div class="flex items-center space-x-3">
+                    <a href="{% url 'login' %}" class="flex items-center px-3 py-1.5 text-gray-300 hover:text-white transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        Login
+                    </a>
+                    <a href="{% url 'signup' %}" class="flex items-center px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        Sign Up
+                    </a>
                 </div>
                 {% endif %}
                 
@@ -215,6 +246,14 @@
                             SPOC
                         </span>
                     {% endif %}
+                    {% if not user.is_staff and not user.is_superuser and not user.groups.all %}
+                        <span class="bg-purple-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                            Student
+                        </span>
+                    {% endif %}
                 </div>
             </div>
             {% if user.is_staff or user.is_superuser %}
@@ -223,7 +262,24 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                         </svg>
-                        Dashboard
+                        Staff Dashboard
+                    </div>
+                </a>
+                <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 border-t border-gray-600 {% if request.resolver_match.url_name == 'user_dashboard' %} text-yellow-400 {% endif %}">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Course Applications
+                    </div>
+                </a>
+            {% else %}
+                <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-gray-200 hover:bg-gray-600 border-t border-gray-600 {% if request.resolver_match.url_name == 'user_dashboard' %} text-yellow-400 {% endif %}">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        My Dashboard
                     </div>
                 </a>
             {% endif %}
@@ -255,6 +311,26 @@
                     Logout
                 </div>
             </a>
+            {% else %}
+            <!-- Login/Signup for Mobile -->
+            <div class="border-t border-gray-600">
+                <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-700">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        Login
+                    </div>
+                </a>
+                <a href="{% url 'signup' %}" class="block px-4 py-2 hover:bg-gray-700">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        Sign Up
+                    </div>
+                </a>
+            </div>
             {% endif %}
             <a href="{% url 'home' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'home' %} text-yellow-400 {% endif %}">Home</a>
             <a href="{% url 'about' %}" class="block px-4 py-2 hover:bg-gray-700 {% if request.resolver_match.url_name == 'about' %} text-yellow-400 {% endif %}">About</a>
@@ -272,7 +348,8 @@
                     <a href="{% url 'spoc_registration' %}" class="block px-4 py-2 hover:bg-gray-600 {% if request.resolver_match.url_name == 'spoc_registration' %} text-yellow-400 {% endif %}">SPOC Registration</a>
                     <a href="{% url 'evaluator_registration' %}" class="block px-4 py-2 hover:bg-gray-600 {% if request.resolver_match.url_name == 'evaluator_registration' %} text-yellow-400 {% endif %}">Evaluator Registration</a>
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-600 text-green-400 {% if request.resolver_match.url_name == 'login' %} text-yellow-400 {% endif %}">SPOC Login</a>
+                        <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-600 text-green-400 {% if request.resolver_match.url_name == 'login' %} text-yellow-400 {% endif %}">Login</a>
+                        <a href="{% url 'signup' %}" class="block px-4 py-2 hover:bg-gray-600 text-green-400 {% if request.resolver_match.url_name == 'signup' %} text-yellow-400 {% endif %}">Sign Up</a>
                     {% endif %}
                 </div>
             </div>
