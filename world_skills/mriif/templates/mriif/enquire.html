@@ -14,6 +14,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('enquiry-form');
             if (form) {
+                // Set traffic source when the form is loaded
+                setTrafficSource();
+                
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     grecaptcha.ready(function() {
@@ -31,6 +34,75 @@
                             });
                     });
                 });
+            }
+            
+            // Function to set the traffic source
+            function setTrafficSource() {
+                // Get the traffic source hidden input
+                const trafficSourceInput = document.getElementById('traffic_source');
+                if (!trafficSourceInput) return;
+                
+                // Check if the source is already stored in localStorage
+                let source = localStorage.getItem('traffic_source');
+                let timestamp = localStorage.getItem('traffic_source_timestamp');
+                const currentTime = new Date().getTime();
+                
+                // If source exists and is less than 30 days old, use it
+                if (source && timestamp && (currentTime - timestamp < 30 * 24 * 60 * 60 * 1000)) {
+                    trafficSourceInput.value = source;
+                    return;
+                }
+                
+                // Otherwise determine the source
+                let referrer = document.referrer.toLowerCase();
+                let params = new URLSearchParams(window.location.search);
+                let utmSource = params.get('utm_source');
+                let utmMedium = params.get('utm_medium');
+                let utmCampaign = params.get('utm_campaign');
+                
+                // Check for UTM parameters first (highest priority)
+                if (utmSource) {
+                    source = utmSource;
+                    if (utmMedium) source += ' / ' + utmMedium;
+                    if (utmCampaign) source += ' / ' + utmCampaign;
+                }
+                // Then check referrer
+                else if (referrer) {
+                    if (referrer.includes('google')) {
+                        source = 'Google';
+                    } else if (referrer.includes('facebook.com') || referrer.includes('fb.com')) {
+                        source = 'Facebook';
+                    } else if (referrer.includes('instagram.com')) {
+                        source = 'Instagram';
+                    } else if (referrer.includes('linkedin.com')) {
+                        source = 'LinkedIn';
+                    } else if (referrer.includes('twitter.com') || referrer.includes('x.com')) {
+                        source = 'Twitter';
+                    } else if (referrer.includes('youtube.com')) {
+                        source = 'YouTube';
+                    } else if (referrer.includes(window.location.hostname)) {
+                        source = 'Internal';
+                    } else if (referrer !== '') {
+                        // Extract domain from referrer
+                        try {
+                            let domain = new URL(referrer).hostname;
+                            source = domain;
+                        } catch (e) {
+                            source = 'Other';
+                        }
+                    } else {
+                        source = 'Direct';
+                    }
+                } else {
+                    source = 'Direct';
+                }
+                
+                // Store the source and timestamp in localStorage
+                localStorage.setItem('traffic_source', source);
+                localStorage.setItem('traffic_source_timestamp', currentTime);
+                
+                // Set the form field value
+                trafficSourceInput.value = source;
             }
         });
     </script>
@@ -100,6 +172,8 @@
                 <div class="px-6 py-5 max-h-[70vh] overflow-y-auto">
                     <form id="enquiry-form" class="space-y-5" method="post" action="{% url 'submit_enquiry' %}">
                         {% csrf_token %}
+                        <!-- Hidden field for traffic source -->
+                        <input type="hidden" id="traffic_source" name="traffic_source" value="Direct">
                         
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1.5">Full Name*</label>
@@ -169,6 +243,29 @@
                                 <input id="city" type="text" name="city" required
                                     class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 text-gray-900"
                                     placeholder="Your city">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="how_did_you_hear" class="block text-sm font-medium text-gray-700 mb-1.5">How did you hear about us?*</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-info-circle text-gray-400"></i>
+                                </div>
+                                <select id="how_did_you_hear" name="how_did_you_hear" required
+                                    class="block w-full pl-10 pr-8 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 appearance-none bg-white text-gray-900">
+                                    <option value="" selected disabled>Select an option</option>
+                                    <option value="SEARCH">Search Engine (Google, Bing, etc.)</option>
+                                    <option value="SOCIAL">Social Media</option>
+                                    <option value="FRIEND">Friend or Colleague</option>
+                                    <option value="EVENT">Event or Workshop</option>
+                                    <option value="ADVERTISEMENT">Advertisement</option>
+                                    <option value="COLLEGE">College/University</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
                             </div>
                         </div>
                         

@@ -208,11 +208,23 @@ class CourseApplication(models.Model):
         return f"{self.first_name} {self.last_name} - {self.course}"
 
 class Enquiry(models.Model):
+    HEARD_FROM_CHOICES = [
+        ('SEARCH', 'Search Engine'),
+        ('SOCIAL', 'Social Media'),
+        ('FRIEND', 'Friend or Colleague'),
+        ('EVENT', 'Event or Workshop'),
+        ('ADVERTISEMENT', 'Advertisement'),
+        ('COLLEGE', 'College/University'),
+        ('OTHER', 'Other'),
+    ]
+    
     name = models.CharField(max_length=100)
     email = models.EmailField()
     mobile = models.CharField(max_length=15)
     course = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
+    traffic_source = models.CharField(max_length=100, blank=True, null=True, help_text="Source of the enquiry (e.g., Google, Facebook, Direct)")
+    how_did_you_hear = models.CharField(max_length=20, choices=HEARD_FROM_CHOICES, blank=True, null=True, help_text="How did you hear about us?")
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

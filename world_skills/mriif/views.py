@@ -921,6 +921,8 @@ def submit_enquiry(request):
             mobile = request.POST.get('mobile')
             course = request.POST.get('course')
             city = request.POST.get('city')
+            traffic_source = request.POST.get('traffic_source', '')
+            how_did_you_hear = request.POST.get('how_did_you_hear', '')
             recaptcha_token = request.POST.get('g-recaptcha-response')
             
             # Basic validation with errors array
@@ -947,6 +949,8 @@ def submit_enquiry(request):
                 errors.append("Please select a course of interest.")
             if not city:
                 errors.append("City is required.")
+            if not how_did_you_hear:
+                errors.append("Please tell us how you heard about us.")
                 
             # If there are validation errors, show them to the user
             if errors:
@@ -954,13 +958,29 @@ def submit_enquiry(request):
                     messages.error(request, error)
                 return redirect('home')
             
+            # If no traffic source is passed, try to determine from HTTP_REFERER
+            if not traffic_source:
+                referer = request.META.get('HTTP_REFERER', '')
+                if 'google' in referer.lower():
+                    traffic_source = 'Google'
+                elif 'facebook' in referer.lower() or 'fb.com' in referer.lower():
+                    traffic_source = 'Facebook'
+                elif 'instagram' in referer.lower():
+                    traffic_source = 'Instagram'
+                elif 'linkedin' in referer.lower():
+                    traffic_source = 'LinkedIn'
+                else:
+                    traffic_source = 'Direct'
+            
             # Save the enquiry to the database
             enquiry = Enquiry(
                 name=name,
                 email=email,
                 mobile=mobile,
                 course=course,
-                city=city
+                city=city,
+                traffic_source=traffic_source,
+                how_did_you_hear=how_did_you_hear
             )
             enquiry.save()
             
