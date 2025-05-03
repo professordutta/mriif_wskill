@@ -8,6 +8,34 @@
     <title>Submit Proposal - XR Learning Hackathon 2025</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="{% static 'js/tailwind.config.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Google reCAPTCHA v3 -->
+    <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_PUBLIC_KEY }}"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f'
+                        }
+                    },
+                    boxShadow: {
+                        'strong': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50">  
     <!-- Include background -->
@@ -135,7 +163,7 @@
                         {% endif %}
 
                         <!-- Form -->
-                        <form id="proposal-form" method="POST" class="space-y-8" enctype="multipart/form-data">
+                        <form id="proposal-form" method="POST" class="space-y-8" enctype="multipart/form-data" data-recaptcha-action="submit_proposal">
                             {% csrf_token %}
                             
                             <!-- Step navigation -->
@@ -305,6 +333,13 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
                                         </svg>
                                     </button>
+                                    
+                                    <!-- reCAPTCHA Terms and Privacy Badge -->
+                                    <div class="mt-4 text-xs text-gray-500 text-center">
+                                        This site is protected by reCAPTCHA and the Google
+                                        <a href="https://policies.google.com/privacy" target="_blank" class="text-blue-600 hover:underline">Privacy Policy</a> and
+                                        <a href="https://policies.google.com/terms" target="_blank" class="text-blue-600 hover:underline">Terms of Service</a> apply.
+                                    </div>
                                 </div>
                             </div>
                         </form>
@@ -374,6 +409,77 @@
                 3: ['faculty_name', 'faculty_email', 'proposal_file', 'declaration']
             }
         });
+
+        // Override the FormHandler's submit behavior with our custom reCAPTCHA integration
+        const form = document.getElementById('proposal-form');
+        if (form) {
+            // Override the default handleSubmit method to prevent it from submitting the form
+            proposalForm.handleSubmit = function(e) {
+                e.preventDefault();
+                
+                // Validate all steps
+                for (let i = 1; i <= this.formState.totalSteps; i++) {
+                    if (!this.validateStep(i)) {
+                        this.showStep(i);
+                        return;
+                    }
+                }
+                
+                // Update submit button state
+                const submitButton = document.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                    Processing...
+                `;
+                
+                // Generate reCAPTCHA token and submit
+                grecaptcha.ready(function() {
+                    grecaptcha.execute('{{ RECAPTCHA_PUBLIC_KEY }}', {action: 'submit_proposal'})
+                        .then(function(token) {
+                            
+                            // Remove any existing token input to avoid duplicates
+                            const existingToken = form.querySelector('input[name="g-recaptcha-response"]');
+                            if (existingToken) {
+                                existingToken.remove();
+                            }
+                            
+                            // Add the token to the form
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'g-recaptcha-response';
+                            input.value = token;
+                            form.appendChild(input);
+                            
+                            // Submit the form directly
+                            form.submit();
+                        })
+                        .catch(error => {
+                            console.error("reCAPTCHA error:", error);
+                            
+                            // Re-enable the submit button
+                            submitButton.disabled = false;
+                            submitButton.innerHTML = `
+                                <span class="mr-2">Submit Proposal</span>
+                                <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                                </svg>
+                            `;
+                            
+                            // Show error message
+                            alert("Error verifying reCAPTCHA. Please try again.");
+                        });
+                });
+            };
+
+            // Apply the new submit handler
+            form.addEventListener('submit', function(e) {
+                proposalForm.handleSubmit(e);
+            });
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,22 @@
+/* Hide Google reCAPTCHA v3 badge */
+.grecaptcha-badge {
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* General styles for custom reCAPTCHA notice */
+.recaptcha-notice {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+.recaptcha-notice a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.recaptcha-notice a:hover {
+    text-decoration: underline;
+}

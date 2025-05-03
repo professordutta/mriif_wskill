@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'mriif.context_processors.recaptcha_context',  # Add the custom context processor
             ],
         },
     },
@@ -136,4 +137,8 @@ CASHFREE_APP_ID = os.getenv('CASHFREE_APP_ID')
 CASHFREE_SECRET_KEY = os.getenv('CASHFREE_SECRET_KEY')
 CASHFREE_ENVIRONMENT = os.getenv('CASHFREE_ENVIRONMENT', 'SANDBOX')
 X_API_VERSION = os.getenv('X_API_VERSION', '2023-08-01')
+
+# Google reCAPTCHA v3 settings
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
 

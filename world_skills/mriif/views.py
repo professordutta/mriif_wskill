@@ -22,6 +22,7 @@ from cashfree_pg.models.customer_details import CustomerDetails
 from cashfree_pg.models.order_meta import OrderMeta
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from .utils import verify_recaptcha
 
 # Configure Cashfree
 Cashfree.XClientId = settings.CASHFREE_APP_ID
@@ -123,9 +124,18 @@ def contact(request):
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         message = request.POST.get('message')
-
+        recaptcha_token = request.POST.get('g-recaptcha-response')
+        
         # Backend validation with specific error messages
         errors = []
+        
+        # Validate reCAPTCHA and add to errors array
+        recaptcha_success, recaptcha_score = verify_recaptcha(recaptcha_token)
+        if not recaptcha_success:
+            errors.append("reCAPTCHA verification failed. Please try again.")
+        elif recaptcha_score < 0.5:
+            errors.append("Security verification failed. Please try again later.")
+        
         if not first_name or len(first_name) < 2:
             errors.append("First name must be at least 2 characters long.")
         if not last_name or len(last_name) < 2:
@@ -187,9 +197,19 @@ def spoc_registration(request):
             pincode = request.POST.get('pincode')
             endorsement_letter = request.FILES.get('endorsement_letter')
             declaration = request.POST.get('declaration')
-
+            recaptcha_token = request.POST.get('g-recaptcha-response')
+            print(f"reCAPTCHA token: {recaptcha_token}")
+            
             # Backend validation with specific error messages
             errors = []
+            
+            # Validate reCAPTCHA first and add to errors array
+            recaptcha_success, recaptcha_score = verify_recaptcha(recaptcha_token)
+            if not recaptcha_success:
+                errors.append("reCAPTCHA verification failed. Please try again.")
+            elif recaptcha_score < 0.5:
+                errors.append("Security verification failed. Please try again later.")
+            
             if not institute_name or len(institute_name) < 3:
                 errors.append("Institute name must be at least 3 characters long.")
             if not institute_code:
@@ -222,7 +242,7 @@ def spoc_registration(request):
                 errors.append("Endorsement letter is required.")
             if not declaration:
                 errors.append("You must agree to the declaration.")
-
+            
             # If there are validation errors, show them to the user
             if errors:
                 for error in errors:
@@ -295,9 +315,18 @@ def submit_proposal(request):
             faculty_email = request.POST.get('faculty_email')
             proposal_file = request.FILES.get('proposal_file')
             declaration = request.POST.get('declaration')
+            recaptcha_token = request.POST.get('g-recaptcha-response')
             
             # Backend validation with specific error messages
             errors = []
+            
+            # Validate reCAPTCHA first and add to errors array
+            recaptcha_success, recaptcha_score = verify_recaptcha(recaptcha_token)
+            if not recaptcha_success:
+                errors.append("reCAPTCHA verification failed. Please try again.")
+            elif recaptcha_score < 0.5:
+                errors.append("Security verification failed. Please try again later.")
+            
             if not proposal_title or len(proposal_title) < 3:
                 errors.append("Proposal title must be at least 3 characters long.")
             if not category:
@@ -417,9 +446,18 @@ def evaluator_registration(request):
             expertise = request.POST.getlist('expertise')  # Use getlist() for multiple select
             cv_file = request.FILES.get('cv_file')
             declaration = request.POST.get('declaration')
+            recaptcha_token = request.POST.get('g-recaptcha-response')
             
             # Backend validation with specific error messages
             errors = []
+            
+            # Validate reCAPTCHA first and add to errors array
+            recaptcha_success, recaptcha_score = verify_recaptcha(recaptcha_token)
+            if not recaptcha_success:
+                errors.append("reCAPTCHA verification failed. Please try again.")
+            elif recaptcha_score < 0.5:
+                errors.append("Security verification failed. Please try again later.")
+            
             if not full_name or len(full_name) < 3:
                 errors.append("Full name must be at least 3 characters long.")
             if not email:
@@ -883,9 +921,18 @@ def submit_enquiry(request):
             mobile = request.POST.get('mobile')
             course = request.POST.get('course')
             city = request.POST.get('city')
+            recaptcha_token = request.POST.get('g-recaptcha-response')
             
-            # Basic validation
+            # Basic validation with errors array
             errors = []
+            
+            # Validate reCAPTCHA and add to errors array
+            recaptcha_success, recaptcha_score = verify_recaptcha(recaptcha_token)
+            if not recaptcha_success:
+                errors.append("reCAPTCHA verification failed. Please try again.")
+            elif recaptcha_score < 0.5:
+                errors.append("Security verification failed. Please try again later.")
+            
             if not name or len(name) < 2:
                 errors.append("Name must be at least 2 characters long.")
             if not email:
