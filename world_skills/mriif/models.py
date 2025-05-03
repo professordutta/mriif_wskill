@@ -233,3 +233,15 @@ class Enquiry(models.Model):
     class Meta:
         verbose_name_plural = "Enquiries"
         ordering = ['-created_at']
+
+class EnquiryNote(models.Model):
+    enquiry = models.ForeignKey(Enquiry, on_delete=models.CASCADE, related_name='enquiry_notes')
+    text = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Note for {self.enquiry} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+    
+    class Meta:
+        ordering = ['-created_at']

@@ -57,4 +57,8 @@ urlpatterns = [
     path('resume-application/<int:application_id>/', views.resume_application, name='resume_application'),
     path('check-duplicate-application/', views.check_duplicate_application, name='check_duplicate_application'),
     path('check-user-exists/', views.check_user_exists, name='check_user_exists'),
+    
+    # New URL patterns for enquiry note functionality
+    path('save-enquiry-notes/', views.save_enquiry_notes, name='save_enquiry_notes'),
+    path('get-enquiry-notes/', views.get_enquiry_notes, name='get_enquiry_notes'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

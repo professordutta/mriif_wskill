@@ -5,7 +5,7 @@ import json
 import uuid
 import re
 from django.contrib import messages
-from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication, Enquiry
+from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication, Enquiry, EnquiryNote
 from django.core.exceptions import ValidationError
 from .validators import validate_file_size, validate_file_extension
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -841,6 +841,33 @@ def staff_dashboard(request):
         except ValueError:
             pass
     
+    # Get enquiries with filters
+    enquiries_query = Enquiry.objects.all().order_by('-id')
+    
+    if search_query:
+        enquiries_query = enquiries_query.filter(
+            Q(name__icontains=search_query) | 
+            Q(email__icontains=search_query) |
+            Q(course__icontains=search_query)
+        )
+    
+    if date_from:
+        try:
+            date_from_obj = timezone.datetime.strptime(date_from, '%Y-%m-%d').date()
+            enquiries_query = enquiries_query.filter(created_at__date__gte=date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = timezone.datetime.strptime(date_to, '%Y-%m-%d').date()
+            enquiries_query = enquiries_query.filter(created_at__date__lte=date_to_obj)
+        except ValueError:
+            pass
+    
+    # Get all unique courses for filtering
+    unique_courses = Enquiry.objects.values_list('course', flat=True).distinct()
+    
     # Get application submissions with filters
     applications_query = CourseApplication.objects.all().order_by('-id')
     
@@ -876,6 +903,16 @@ def staff_dashboard(request):
     except EmptyPage:
         contacts_page = contacts_paginator.page(contacts_paginator.num_pages)
     
+    # Pagination for enquiries
+    enquiries_paginator = Paginator(enquiries_query, 10)  # Show 10 enquiries per page
+    
+    try:
+        enquiries_page = enquiries_paginator.page(page)
+    except PageNotAnInteger:
+        enquiries_page = enquiries_paginator.page(1)
+    except EmptyPage:
+        enquiries_page = enquiries_paginator.page(enquiries_paginator.num_pages)
+    
     # Pagination for applications
     applications_paginator = Paginator(applications_query, 10)  # Show 10 applications per page
     
@@ -890,6 +927,7 @@ def staff_dashboard(request):
     stats = {
         'total_contacts': ContactUs.objects.count(),
         'total_applications': CourseApplication.objects.count(),
+        'total_enquiries': Enquiry.objects.count(),
         'pending_payments': CourseApplication.objects.filter(status='PAYMENT_PENDING').count(),
         'completed_payments': CourseApplication.objects.filter(status='PAYMENT_COMPLETED').count(),
     }
@@ -898,10 +936,14 @@ def staff_dashboard(request):
     context = {
         'contacts': contacts_query,
         'contacts_page': contacts_page,
+        'enquiries': enquiries_query,
+        'enquiries_page': enquiries_page,
         'applications': applications_query,
         'applications_page': applications_page,
         'all_contacts': contacts_query,  # For PDF export
         'all_applications': applications_query,  # For PDF export
+        'all_enquiries': enquiries_query,  # For PDF/CSV export
+        'unique_courses': unique_courses,  # For course filtering
         'stats': stats,
         'tab': tab,
         'search_query': search_query,
@@ -1073,3 +1115,52 @@ def check_duplicate_application(request):
         return JsonResponse({'duplicate': False})
     
     return JsonResponse({'error': 'Invalid request method'})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or u.groups.filter(name='staff').exists() or u.is_superuser)
+def save_enquiry_notes(request):
+    if request.method == 'POST':
+        enquiry_id = request.POST.get('id')
+        notes_text = request.POST.get('notes')
+        
+        try:
+            enquiry = Enquiry.objects.get(id=enquiry_id)
+            
+            # Create a new note for this enquiry
+            note = EnquiryNote(
+                enquiry=enquiry,
+                text=notes_text,
+                created_by=request.user
+            )
+            note.save()
+            
+            return JsonResponse({'status': 'success'})
+        except Enquiry.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Enquiry not found'}, status=404)
+    
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or u.groups.filter(name='staff').exists() or u.is_superuser)
+def get_enquiry_notes(request):
+    if request.method == 'GET':
+        enquiry_id = request.GET.get('id')
+        
+        try:
+            enquiry = Enquiry.objects.get(id=enquiry_id)
+            notes = EnquiryNote.objects.filter(enquiry=enquiry).order_by('-created_at')
+            
+            notes_data = []
+            for note in notes:
+                notes_data.append({
+                    'id': note.id,
+                    'text': note.text,
+                    'created_by_name': note.created_by.get_full_name() if note.created_by else 'Unknown',
+                    'created_at': note.created_at.strftime('%b %d, %Y, %I:%M %p')
+                })
+            
+            return JsonResponse({'notes': notes_data})
+        except Enquiry.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Enquiry not found'}, status=404)
+    
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
