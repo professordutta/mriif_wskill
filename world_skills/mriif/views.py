@@ -5,7 +5,7 @@ import json
 import uuid
 import re
 from django.contrib import messages
-from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication, Enquiry, EnquiryNote
+from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication, Enquiry, EnquiryNote, UserProfile
 from django.core.exceptions import ValidationError
 from .validators import validate_file_size, validate_file_extension
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -587,6 +587,21 @@ def course_application(request, course_id=None):
     # Check if residential parameter is provided
     residential_preselect = request.GET.get('residential') == '1'
     
+    # First check if the user's profile is complete
+    try:
+        profile = request.user.profile
+        if not profile.profile_completed:
+            messages.warning(request, "Please complete your profile before applying for a course.")
+            # Redirect to profile edit page with a 'next' parameter to return here
+            return_path = request.get_full_path()
+            return redirect(f"{reverse('edit_profile')}?next={return_path}")
+    except:
+        # Create profile if it doesn't exist (should rarely happen due to signals)
+        profile = UserProfile.objects.create(user=request.user)
+        messages.warning(request, "Please complete your profile before applying for a course.")
+        return_path = request.get_full_path()
+        return redirect(f"{reverse('edit_profile')}?next={return_path}")
+    
     if course_id:
         selected_course = get_object_or_404(Course, id=course_id)
         selected_course_type = selected_course.course_type
@@ -609,6 +624,12 @@ def course_application(request, course_id=None):
             ).exists():
                 messages.error(request, "You already have an active application for this course.")
                 return redirect('course_application_with_id', course_id=course_id)
+            
+            # Double check profile completion before proceeding
+            if not profile.profile_completed:
+                messages.warning(request, "Please complete your profile before applying for a course.")
+                return_path = request.get_full_path()
+                return redirect(f"{reverse('edit_profile')}?next={return_path}")
             
             # Check if include_residential checkbox is checked
             include_residential = request.POST.get('include_residential') == 'on'
@@ -651,7 +672,8 @@ def course_application(request, course_id=None):
         'selected_course_type': selected_course_type,
         'course_type_display': course_type_display,
         'selected_course': selected_course,
-        'residential_preselect': residential_preselect
+        'residential_preselect': residential_preselect,
+        'user_profile': profile
     })
 
 def payment_page(request, application_id):
@@ -1173,3 +1195,89 @@ def handler404(request, exception):
     response = render(request, 'mriif/404.html', context)
     response.status_code = 404
     return response
+
+@login_required(login_url='login')
+def edit_profile(request):
+    """
+    View function for editing user profile information
+    """
+    # Get the user's profile (created by signals)
+    try:
+        profile = request.user.profile
+    except:
+        # Create profile if it doesn't exist (should rarely happen due to signals)
+        profile = UserProfile.objects.create(user=request.user)
+    
+    if request.method == 'POST':
+        # Process profile update
+        try:
+            # Extract form data
+            phone = request.POST.get('phone')
+            organization = request.POST.get('organization')
+            designation = request.POST.get('designation')
+            address = request.POST.get('address')
+            state = request.POST.get('state')
+            city = request.POST.get('city')
+            pincode = request.POST.get('pincode')
+            
+            # Basic validation
+            errors = []
+            
+            if not phone or not re.match(r'^[0-9]{10}$', phone):
+                errors.append("Phone number must be exactly 10 digits")
+            if not organization:
+                errors.append("Organization is required")
+            if not designation:
+                errors.append("Designation is required")
+            if not address:
+                errors.append("Address is required")
+            if not state:
+                errors.append("State is required")
+            if not city:
+                errors.append("City is required")
+            if not pincode or not re.match(r'^[0-9]{6}$', pincode):
+                errors.append("Pincode must be exactly 6 digits")
+            
+            # If there are validation errors, show them to the user
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+            else:
+                # Update first and last name in User model
+                first_name = request.POST.get('first_name')
+                last_name = request.POST.get('last_name')
+                if first_name:
+                    request.user.first_name = first_name
+                if last_name:
+                    request.user.last_name = last_name
+                request.user.save()
+                
+                # Update profile fields
+                profile.phone = phone
+                profile.organization = organization
+                profile.designation = designation
+                profile.address = address
+                profile.state = state
+                profile.city = city
+                profile.pincode = pincode
+                profile.save()  # This will update profile_completed via the save method
+                
+                messages.success(request, "Profile updated successfully!")
+                
+                # If redirected from course application, go back there
+                next_url = request.POST.get('next')
+                if next_url:
+                    return redirect(next_url)
+                    
+                return redirect('user_dashboard')
+        
+        except Exception as e:
+            messages.error(request, f"Error updating profile: {str(e)}")
+    
+    # Pass redirect URL if provided
+    next_url = request.GET.get('next', '')
+    
+    return render(request, 'mriif/edit_profile.html', {
+        'profile': profile,
+        'next': next_url
+    })

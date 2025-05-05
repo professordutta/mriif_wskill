@@ -4,6 +4,40 @@ from mriif.utils import get_proposal_file_path
 from mriif.validators import validate_file_size, validate_file_extension
 from django.core.exceptions import ValidationError
 
+class UserProfile(models.Model):
+    """Extended user profile with additional personal and contact information"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone = models.CharField(max_length=10, blank=True, null=True)
+    organization = models.CharField(max_length=200, blank=True, null=True)
+    designation = models.CharField(max_length=100, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    pincode = models.CharField(max_length=6, blank=True, null=True)
+    profile_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+    
+    def is_complete(self):
+        """Check if all required profile fields are filled"""
+        return all([
+            self.phone,
+            self.organization,
+            self.designation,
+            self.address,
+            self.state,
+            self.city,
+            self.pincode
+        ])
+    
+    def save(self, *args, **kwargs):
+        """Update profile_completed status before saving"""
+        self.profile_completed = self.is_complete()
+        super().save(*args, **kwargs)
+
 class Skill(models.Model):
     job_img = models.ImageField(upload_to='images/')
     job_id = models.CharField(max_length=255)

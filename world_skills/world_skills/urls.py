@@ -58,6 +58,7 @@ urlpatterns = [
     
     # User account integration routes
     path('my-dashboard/', views.user_dashboard, name='user_dashboard'),
+    path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('resume-application/<int:application_id>/', views.resume_application, name='resume_application'),
     path('check-duplicate-application/', views.check_duplicate_application, name='check_duplicate_application'),
     path('check-user-exists/', views.check_user_exists, name='check_user_exists'),
