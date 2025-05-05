@@ -1,0 +1,338 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - NSDC World Skills Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        /* Custom animations and styles */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Improved section headings */
+        .section-heading {
+            position: relative;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .section-heading::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 50px;
+            background: linear-gradient(to right, #eab308, #fbbf24);
+        }
+        
+        /* Profile completion indicator */
+        .completion-indicator {
+            height: 0.5rem;
+            border-radius: 9999px;
+            overflow: hidden;
+            background-color: #e5e7eb;
+        }
+        
+        .completion-progress {
+            height: 100%;
+            background: linear-gradient(to right, #eab308, #fbbf24);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50">
+    <!-- Include background -->
+    {% include 'mriif/background.html' %}
+    
+    <!-- Include navbar and messages -->
+    {% include 'mriif/navbar.html' %}
+    {% include 'mriif/messages.html' %}
+
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8 animate-fade-in">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Your Profile</h1>
+                <p class="text-gray-600">Complete your profile to apply for courses and access all features</p>
+                
+                <!-- Profile Completion Indicator -->
+                <div class="max-w-md mx-auto mt-6 px-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Profile Completion</span>
+                        <span id="completion-percentage" class="text-sm font-medium {% if profile.profile_completed %}text-green-600{% else %}text-yellow-600{% endif %}">
+                            {% if profile.profile_completed %}100%{% else %}Incomplete{% endif %}
+                        </span>
+                    </div>
+                    <div class="completion-indicator">
+                        <div class="completion-progress" style="width: {% if profile.profile_completed %}100%{% else %}0%{% endif %};"></div>
+                    </div>
+                    
+                    {% if not profile.profile_completed %}
+                    <p class="mt-2 text-sm text-gray-500">
+                        <i class="fas fa-info-circle mr-1"></i> Please complete all required fields marked with * to proceed with course applications
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6 animate-fade-in">
+                <form method="post" id="profileForm" class="space-y-8">
+                    {% csrf_token %}
+                    
+                    <!-- User Information Section -->
+                    <div>
+                        <h3 class="section-heading text-xl text-gray-800">User Information</h3>
+                        
+                        {% if next %}
+                        <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-info-circle text-blue-500 mr-3 text-xl"></i>
+                                <div>
+                                    <h4 class="font-semibold text-blue-800">Complete your profile to continue</h4>
+                                    <p class="text-sm text-blue-700 mt-1">You'll be redirected back to the application form after profile completion</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="next" value="{{ next }}">
+                        {% endif %}
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="first_name" name="first_name" value="{{ request.user.first_name }}" required>
+                            </div>
+                            <div>
+                                <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="last_name" name="last_name" value="{{ request.user.last_name }}" required>
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" class="w-full rounded-md border border-gray-300 bg-gray-100 py-2 px-3 shadow-sm" id="email" value="{{ request.user.email }}" readonly>
+                                <p class="text-xs text-gray-500 mt-1">Contact administrator to change your email</p>
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone (10 digits) *</label>
+                                <input type="tel" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="phone" name="phone" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits" maxlength="10" value="{{ profile.phone|default:'' }}" required>
+                                <div id="phoneError" class="text-red-500 text-sm mt-1 hidden">Phone number must be exactly 10 digits</div>
+                            </div>
+                            <div>
+                                <label for="organization" class="block text-sm font-medium text-gray-700 mb-2">Organization/Institution *</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="organization" name="organization" value="{{ profile.organization|default:'' }}" required>
+                            </div>
+                            <div>
+                                <label for="designation" class="block text-sm font-medium text-gray-700 mb-2">Designation/Role *</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="designation" name="designation" value="{{ profile.designation|default:'' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Address Section -->
+                    <div>
+                        <h3 class="section-heading text-xl text-gray-800">Address Information</h3>
+                        
+                        <div class="grid md:grid-cols-1 gap-6 mb-4">
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                                <textarea class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="address" name="address" rows="3" required>{{ profile.address|default:'' }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="state" class="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                                <select class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="state" name="state" required>
+                                    <option value="">-- Select State --</option>
+                                    {% include 'mriif/states_list.html' %}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="city" name="city" value="{{ profile.city|default:'' }}" required>
+                            </div>
+                            <div>
+                                <label for="pincode" class="block text-sm font-medium text-gray-700 mb-2">Pincode *</label>
+                                <input type="text" class="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" id="pincode" name="pincode" pattern="[0-9]{6}" maxlength="6" value="{{ profile.pincode|default:'' }}" required>
+                                <div id="pincodeError" class="text-red-500 text-sm mt-1 hidden">Pincode must be exactly 6 digits</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Section -->
+                    <div class="pt-4 border-t border-gray-200">
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="text-gray-600 text-sm">
+                                <p><i class="fas fa-info-circle mr-1"></i> All fields marked with * are required to complete your profile</p>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="{% if next %}{{ next }}{% else %}{% url 'user_dashboard' %}{% endif %}" class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
+                                    <i class="fas fa-arrow-left mr-2"></i> Back
+                                </a>
+                                <button type="submit" class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                    <i class="fas fa-save mr-2"></i> Save Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% include 'mriif/footer.html' %}
+
+    <script>
+        $(document).ready(function() {
+            // Set the selected state if it exists
+            if ('{{ profile.state }}') {
+                $("#state").val('{{ profile.state }}');
+            }
+            
+            // Phone number validation
+            $('#phone').on('input', function() {
+                let phoneNumber = $(this).val();
+                
+                // Remove any non-digit characters
+                phoneNumber = phoneNumber.replace(/\D/g, '');
+                
+                // Ensure value is only digits
+                $(this).val(phoneNumber);
+                
+                // Validate length
+                if (phoneNumber.length === 10) {
+                    $('#phoneError').addClass('hidden');
+                    $(this).removeClass('border-red-500').addClass('border-green-500');
+                } else {
+                    $('#phoneError').removeClass('hidden');
+                    $(this).removeClass('border-green-500').addClass('border-red-500');
+                }
+            });
+            
+            // Pincode validation
+            $('#pincode').on('input', function() {
+                let pincode = $(this).val();
+                
+                // Remove any non-digit characters
+                pincode = pincode.replace(/\D/g, '');
+                
+                // Ensure value is only digits
+                $(this).val(pincode);
+                
+                // Validate length
+                if (pincode.length === 6) {
+                    $('#pincodeError').addClass('hidden');
+                    $(this).removeClass('border-red-500').addClass('border-green-500');
+                } else {
+                    $('#pincodeError').removeClass('hidden');
+                    $(this).removeClass('border-green-500').addClass('border-red-500');
+                }
+            });
+            
+            // Form validation
+            $('#profileForm').on('submit', function(e) {
+                let isValid = true;
+                let phoneNumber = $('#phone').val();
+                let pincode = $('#pincode').val();
+                
+                if (phoneNumber.length !== 10) {
+                    $('#phoneError').removeClass('hidden');
+                    $('#phone').focus();
+                    isValid = false;
+                }
+                
+                if (pincode.length !== 6) {
+                    $('#pincodeError').removeClass('hidden');
+                    if (isValid) {
+                        $('#pincode').focus();
+                    }
+                    isValid = false;
+                }
+                
+                return isValid;
+            });
+            
+            // Update completion indicator based on form completion
+            function updateCompletionIndicator() {
+                const requiredFields = [
+                    'first_name', 'last_name', 'phone', 'organization', 
+                    'designation', 'address', 'state', 'city', 'pincode'
+                ];
+                
+                let completedFields = 0;
+                
+                requiredFields.forEach(field => {
+                    const $field = $('#' + field);
+                    if ($field.val() && $field.val().trim() !== '') {
+                        completedFields++;
+                    }
+                });
+                
+                // Calculate percentage
+                const percentage = Math.round((completedFields / requiredFields.length) * 100);
+                
+                // Update the indicator
+                $('.completion-progress').css('width', percentage + '%');
+                $('#completion-percentage').text(percentage + '%');
+                
+                // Update color based on completion
+                if (percentage === 100) {
+                    $('#completion-percentage').removeClass('text-yellow-600').addClass('text-green-600');
+                    $('.completion-progress').css('background', 'linear-gradient(to right, #10b981, #34d399)');
+                } else if (percentage >= 50) {
+                    $('#completion-percentage').removeClass('text-green-600').addClass('text-yellow-600');
+                    $('.completion-progress').css('background', 'linear-gradient(to right, #f59e0b, #fbbf24)');
+                } else {
+                    $('#completion-percentage').removeClass('text-green-600').addClass('text-yellow-600');
+                    $('.completion-progress').css('background', 'linear-gradient(to right, #f59e0b, #fbbf24)');
+                }
+            }
+            
+            // Monitor input changes to update completion indicator in real-time
+            $('input, textarea, select').on('change keyup', function() {
+                updateCompletionIndicator();
+            });
+            
+            // Run on page load to initialize
+            updateCompletionIndicator();
+        });
+    </script>
+</body>
+</html>
