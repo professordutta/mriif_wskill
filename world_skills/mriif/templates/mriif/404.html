@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | NSDC World Skills Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .error-card {
+            transition: all 0.3s ease;
+        }
+        
+        .error-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pulse-circle {
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.5;
+                transform: scale(0.95);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-yellow-50/30 to-gray-50 min-h-screen">
+    <!-- Include background -->
+    {% include 'mriif/background.html' %}
+    
+    <!-- Include navbar -->
+    {% include 'mriif/navbar.html' %}
+    {% include 'mriif/messages.html' %}
+    
+    <!-- Error Section -->
+    <div class="container mx-auto px-4 py-16 relative z-10">
+        <div class="max-w-3xl mx-auto">
+            <div class="animate-fade-in bg-white rounded-xl shadow-lg overflow-hidden error-card">
+                <div class="p-8 lg:p-12">
+                    <div class="flex flex-col items-center text-center">
+                        <!-- Animated Error Icon -->
+                        <div class="relative mb-6">
+                            <div class="w-32 h-32 rounded-full bg-indigo-100/50 pulse-circle absolute"></div>
+                            <div class="relative z-10">
+                                <svg class="w-32 h-32" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="100" cy="100" r="90" stroke="url(#grad1)" stroke-width="8"/>
+                                    <path d="M65 65L135 135M65 135L135 65" stroke="url(#grad1)" stroke-width="8" stroke-linecap="round"/>
+                                    <defs>
+                                        <linearGradient id="grad1" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#4338ca"/>
+                                            <stop offset="100%" stop-color="#3b82f6"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Error Code -->
+                        <h1 class="text-7xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">404</h1>
+                        
+                        <!-- Error Description -->
+                        <h2 class="text-2xl md:text-3xl font-semibold text-gray-800 mt-4 mb-2">Page Not Found</h2>
+                        <p class="text-gray-600 mb-8 max-w-lg mx-auto">The page you're looking for doesn't exist or has been moved. Please check the URL or navigate back to our homepage.</p>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="{% url 'home' %}" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-500 text-white font-semibold rounded-full shadow-lg hover:from-indigo-700 hover:to-blue-600 transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-home mr-2"></i> Back to Home
+                            </a>
+                            <a href="{% url 'contact' %}" class="px-8 py-3 bg-transparent border border-indigo-500 text-indigo-600 font-semibold rounded-full hover:bg-indigo-50 transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-envelope mr-2"></i> Contact Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Decorative Footer -->
+                <div class="h-2 bg-gradient-to-r from-yellow-400 to-yellow-500"></div>
+            </div>
+            
+            <!-- Additional Helpful Content -->
+            <div class="mt-8 text-center animate-fade-in" style="animation-delay: 0.3s;">
+                <p class="text-gray-600">
+                    Looking for something specific? Try checking our <a href="{% url 'courses_list' %}" class="text-blue-600 hover:underline">courses page</a> or visit our <a href="{% url 'about' %}" class="text-blue-600 hover:underline">about section</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include footer -->
+    {% include 'mriif/footer.html' %}
+    
+</body>
+</html>

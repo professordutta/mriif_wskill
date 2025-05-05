@@ -1164,3 +1164,12 @@ def get_enquiry_notes(request):
             return JsonResponse({'status': 'error', 'message': 'Enquiry not found'}, status=404)
     
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+def handler404(request, exception):
+    """
+    Custom 404 page handler
+    """
+    context = {}
+    response = render(request, 'mriif/404.html', context)
+    response.status_code = 404
+    return response
