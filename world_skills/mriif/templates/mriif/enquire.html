@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <!-- Google reCAPTCHA v3 -->
     <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_PUBLIC_KEY }}"></script>
+    <style>
+        /* Hide the Google reCAPTCHA badge */
+        .grecaptcha-badge {
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('enquiry-form');

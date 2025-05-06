@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication, Enquiry, UserProfile
+from .models import Skill, ContactUs, SPOCRegistration, Proposal, EvaluatorRegistration, Course, CourseApplication, Enquiry, UserProfile, EnquiryNote
 
 # Register your models here.
 admin.site.register(Skill)
@@ -11,3 +11,4 @@ admin.site.register(Course)
 admin.site.register(CourseApplication)
 admin.site.register(Enquiry)
 admin.site.register(UserProfile)
+admin.site.register(EnquiryNote)
